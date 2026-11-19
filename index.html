@@ -1,0 +1,3602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>୨ৎ LYRICA STUDIO — Browser-Based Virtual Music Production Workstation</title>
+  <!-- Google Fonts: Editorial Serif + Clean Sans + Monospace -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ==========================================================================
+       01. LUXURIOUS PASTEL DESIGN TOKENS & SYSTEM THEME
+       ========================================================================== */
+    :root {
+      --bg-ivory: #FDFBF9;
+      --bg-blush: #F8E8EE;
+      --bg-lavender: #E5D9F2;
+      --bg-peach: #FCEADE;
+      --surface-glass: rgba(255, 253, 251, 0.86);
+      --surface-card: #FFFFFF;
+      --surface-subtle: #F9F4F6;
+      --accent-rose: #D98B9E;
+      --accent-rose-deep: #B8657A;
+      --accent-plum: #6B4E71;
+      --accent-plum-dark: #4B3550;
+      --accent-lilac: #A486C6;
+      --accent-peach-deep: #E5A983;
+      --text-charcoal: #2B262D;
+      --text-muted: #6C6270;
+      --text-soft: #968B9A;
+      --border-delicate: rgba(107, 78, 113, 0.14);
+      --border-strong: rgba(107, 78, 113, 0.26);
+      --shadow-soft: 0 8px 28px rgba(107, 78, 113, 0.07);
+      --shadow-float: 0 16px 40px rgba(75, 53, 80, 0.14);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: var(--font-sans);
+      color: var(--text-charcoal);
+      background: linear-gradient(135deg, var(--bg-ivory) 0%, var(--bg-blush) 48%, var(--bg-lavender) 100%);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: rgba(248, 232, 238, 0.4); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb { background: rgba(107, 78, 113, 0.25); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(107, 78, 113, 0.42); }
+
+    /* ==========================================================================
+       02. APP SHELL, TOP TRANSPORT BAR & PERSISTENT SIDEBAR
+       ========================================================================== */
+    .app-shell {
+      display: grid;
+      grid-template-rows: 62px 1fr;
+      grid-template-columns: 248px 1fr;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+    .app-shell.sidebar-collapsed {
+      grid-template-columns: 72px 1fr;
+    }
+
+    /* Global Top Header & Transport Bar */
+    .topbar {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 18px;
+      background: rgba(253, 251, 249, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-delicate);
+      z-index: 30;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 220px;
+    }
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent-rose), var(--accent-plum));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      box-shadow: 0 4px 12px rgba(107, 78, 113, 0.25);
+      flex-shrink: 0;
+    }
+    .project-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-rose-deep);
+    }
+    .project-title-input {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-charcoal);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 1px 6px;
+      margin-left: -6px;
+      width: 185px;
+      transition: all 0.2s;
+    }
+    .project-title-input:hover, .project-title-input:focus {
+      background: var(--surface-card);
+      border-color: var(--border-strong);
+      outline: none;
+    }
+
+    /* Center Transport Controls */
+    .transport-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(180deg, #FFFFFF, #FAF3F6);
+      border: 1px solid var(--border-delicate);
+      border-radius: 999px;
+      padding: 5px 14px;
+      box-shadow: 0 3px 14px rgba(107, 78, 113, 0.06);
+    }
+    .t-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border-delicate);
+      background: var(--surface-card);
+      color: var(--text-charcoal);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .t-btn:hover { background: var(--bg-blush); border-color: var(--accent-rose); transform: translateY(-1px); }
+    .t-btn.play-active {
+      background: linear-gradient(135deg, var(--accent-rose), var(--accent-plum));
+      color: #FFF;
+      border-color: transparent;
+      box-shadow: 0 3px 10px rgba(217, 139, 158, 0.45);
+    }
+    .t-btn.toggle-on {
+      background: var(--accent-plum);
+      color: #FFF;
+      border-color: var(--accent-plum);
+    }
+    .timecode-display {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-plum-dark);
+      background: var(--bg-blush);
+      padding: 5px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border-delicate);
+      min-width: 112px;
+      text-align: center;
+    }
+    .transport-param {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 0 6px;
+      border-left: 1px solid var(--border-delicate);
+    }
+    .transport-param input, .transport-param select {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-charcoal);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      padding: 2px 4px;
+    }
+    .transport-param input { width: 48px; text-align: center; }
+    .transport-param input:focus, .transport-param select:focus {
+      background: #FFF;
+      border-color: var(--accent-rose);
+      outline: none;
+    }
+
+    /* Right Studio Status & History Actions */
+    .status-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--surface-card);
+      border: 1px solid var(--border-delicate);
+      color: var(--text-muted);
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #48BB78;
+      box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
+    }
+    .status-dot.idle { background: var(--accent-peach-deep); box-shadow: 0 0 0 3px rgba(229, 169, 131, 0.25); }
+
+    /* Left Navigation Sidebar */
+    .sidebar {
+      background: var(--surface-glass);
+      backdrop-filter: blur(18px);
+      border-right: 1px solid var(--border-delicate);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 10px;
+      overflow-y: auto;
+      z-index: 20;
+    }
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .nav-item:hover {
+      background: rgba(248, 232, 238, 0.7);
+      color: var(--text-charcoal);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(217, 139, 158, 0.2), rgba(229, 217, 242, 0.45));
+      border-color: rgba(217, 139, 158, 0.4);
+      color: var(--accent-plum-dark);
+      box-shadow: 0 3px 10px rgba(107, 78, 113, 0.06);
+    }
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent-plum);
+    }
+    .sidebar-collapsed .nav-label,
+    .sidebar-collapsed .sidebar-footer-text { display: none; }
+    .sidebar-collapsed .nav-item { justify-content: center; padding: 11px; }
+
+    /* Main Workspace Canvas */
+    .workspace-main {
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 22px 26px 40px;
+    }
+    .view-panel { display: none; animation: fadeSlideIn 0.22s ease; }
+    .view-panel.active { display: block; }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       03. REUSABLE EDITORIAL CARDS, BUTTONS, INPUTS & BADGES
+       ========================================================================== */
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-delicate);
+    }
+    .editorial-title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--accent-plum-dark);
+      line-height: 1.15;
+    }
+    .editorial-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--surface-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-delicate);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent-plum-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 600;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--text-charcoal);
+      cursor: pointer;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--bg-blush); border-color: var(--accent-rose); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-rose), var(--accent-plum));
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(107, 78, 113, 0.22);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-rose-deep), var(--accent-plum-dark));
+      color: #FFFFFF;
+    }
+    .btn-soft {
+      background: var(--bg-lavender);
+      border-color: rgba(164, 134, 198, 0.35);
+      color: var(--accent-plum-dark);
+    }
+    .btn-sm { padding: 5px 10px; font-size: 11.5px; border-radius: 8px; }
+    .btn-danger { color: #B83256; border-color: rgba(184, 50, 86, 0.25); }
+    .btn-danger:hover { background: #FFF0F3; border-color: #B83256; }
+
+    .input-field, .select-field, .textarea-field {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255, 255, 255, 0.92);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--text-charcoal);
+      transition: border-color 0.16s;
+    }
+    .input-field:focus, .select-field:focus, .textarea-field:focus {
+      outline: none;
+      border-color: var(--accent-rose);
+      box-shadow: 0 0 0 3px rgba(217, 139, 158, 0.18);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 5px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent-rose), var(--accent-lilac));
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #FFF;
+      border: 2.5px solid var(--accent-plum);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+      cursor: pointer;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+
+    /* ==========================================================================
+       04. SPECIALIZED MODULE STYLES
+       ========================================================================== */
+    /* Dashboard Cards */
+    .project-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-delicate);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-float);
+      border-color: var(--accent-rose);
+    }
+    .project-cover {
+      height: 92px;
+      padding: 14px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      color: #FFF;
+      position: relative;
+    }
+    .project-body { padding: 14px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+
+    /* Songwriting Section Cards */
+    .lyric-section-card {
+      background: var(--surface-card);
+      border-radius: 14px;
+      border: 1px solid var(--border-delicate);
+      border-left: 5px solid var(--accent-rose);
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(107, 78, 113, 0.04);
+    }
+    .lyric-section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--border-delicate);
+    }
+    .lyric-textarea {
+      width: 100%;
+      min-height: 108px;
+      padding: 14px;
+      border: none;
+      resize: vertical;
+      font-family: var(--font-serif);
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--text-charcoal);
+      background: transparent;
+    }
+    .lyric-textarea:focus { outline: none; background: rgba(252, 234, 222, 0.18); }
+
+    /* Canvas Containers */
+    .canvas-frame {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border-strong);
+      background: #231E26;
+      overflow: hidden;
+      position: relative;
+    }
+    canvas { display: block; width: 100%; }
+
+    /* Virtual Singer Notice Banner */
+    .honest-notice {
+      background: linear-gradient(135deg, rgba(252, 234, 222, 0.9), rgba(248, 232, 238, 0.9));
+      border: 1px solid rgba(217, 139, 158, 0.45);
+      border-radius: 12px;
+      padding: 11px 15px;
+      font-size: 12.5px;
+      color: var(--accent-plum-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    /* Syllable Chip Mapping */
+    .syllable-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 230px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .syllable-chip {
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 7px 10px;
+      min-width: 82px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+    .syllable-chip input {
+      width: 68px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 2px 5px;
+      border: 1px solid var(--border-delicate);
+      border-radius: 5px;
+      background: var(--bg-ivory);
+    }
+
+    /* Mixing Console Channel Strips */
+    .mixer-rack {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    .channel-strip {
+      min-width: 126px;
+      width: 126px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F7EFF3 100%);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .channel-strip.master-strip {
+      background: linear-gradient(180deg, #F8E8EE 0%, #E5D9F2 100%);
+      border: 1.5px solid var(--accent-plum);
+      min-width: 146px;
+      width: 146px;
+    }
+    .fader-well {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 150px;
+      margin: 4px 0;
+    }
+    .vertical-fader {
+      writing-mode: bt-lr;
+      -webkit-appearance: slider-vertical;
+      width: 8px;
+      height: 140px;
+    }
+
+    /* Toast Notification & Modal Backdrop */
+    .toast-stack {
+      position: fixed;
+      bottom: 18px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .toast-msg {
+      background: var(--accent-plum-dark);
+      color: #FFF;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      box-shadow: var(--shadow-float);
+      border: 1px solid rgba(255,255,255,0.16);
+      animation: fadeSlideIn 0.2s ease;
+    }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(43, 38, 45, 0.48);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--bg-ivory);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 86vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-float);
+    }
+
+    @media (max-width: 980px) {
+      .app-shell { grid-template-columns: 68px 1fr; }
+      .nav-label, .sidebar-footer-text { display: none; }
+      .nav-item { justify-content: center; }
+      .grid-3, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .transport-param.hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <!-- ======================================================================
+         GLOBAL TOP HEADER & TRANSPORT BAR
+         ====================================================================== -->
+    <header class="topbar">
+      <div class="brand-group">
+        <button class="t-btn" id="btnToggleSidebar" title="Collapse/Expand Navigation Sidebar">☰</button>
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+        </div>
+        <div class="project-title-wrap">
+          <span class="brand-tag">୨ৎ LYRICA STUDIO</span>
+          <input type="text" id="globalProjectTitle" class="project-title-input" value="Velvet Echoes" aria-label="Project Title" />
+        </div>
+      </div>
+
+      <!-- Global Playback & Musical Transport -->
+      <div class="transport-bar" role="region" aria-label="Global Transport">
+        <button class="t-btn" id="btnTransportStop" title="Stop & Return to Start (0)">⏹</button>
+        <button class="t-btn play-active" id="btnTransportPlay" title="Play / Pause Master Timeline (Space)">▶</button>
+        <button class="t-btn toggle-on" id="btnTransportLoop" title="Toggle Loop Playback">🔁</button>
+        <button class="t-btn" id="btnTransportMetronome" title="Toggle Metronome Click">⏱</button>
+        <div class="timecode-display" id="globalTimecode">001:1 | 00:00.0</div>
+        <div class="transport-param">
+          <span>BPM</span>
+          <input type="number" id="globalBpm" min="50" max="220" value="96" />
+        </div>
+        <div class="transport-param hide-sm">
+          <span>KEY</span>
+          <select id="globalKey">
+            <option>C</option><option>C#</option><option>D</option><option>Eb</option>
+            <option>E</option><option>F</option><option>F#</option><option>G</option>
+            <option>Ab</option><option selected>A</option><option>Bb</option><option>B</option>
+          </select>
+          <select id="globalScale">
+            <option value="major">Major</option>
+            <option value="natural_minor" selected>Nat. Minor</option>
+            <option value="harmonic_minor">Harm. Minor</option>
+            <option value="melodic_minor">Mel. Minor</option>
+            <option value="pentatonic">Pentatonic</option>
+          </select>
+        </div>
+        <div class="transport-param hide-sm">
+          <span>SIG</span>
+          <select id="globalTimeSig">
+            <option value="4/4" selected>4/4</option>
+            <option value="3/4">3/4</option>
+            <option value="6/8">6/8</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Status, Undo/Redo, Save & Help -->
+      <div class="status-group">
+        <button class="t-btn" id="btnUndo" title="Undo (Ctrl+Z)">↶</button>
+        <button class="t-btn" id="btnRedo" title="Redo (Ctrl+Y)">↷</button>
+        <button class="btn btn-sm btn-primary" id="btnManualSave" title="Save Project to IndexedDB (Ctrl+S)">Save</button>
+        <div class="pill-badge" id="autosaveBadge" title="Local Browser IndexedDB Persistence Status">
+          <span class="status-dot" id="audioEngineDot"></span>
+          <span id="autosaveText">Saved Locally</span>
+        </div>
+        <button class="t-btn" id="btnOpenTutorial" title="Studio Walkthrough & Shortcuts">?</button>
+        <button class="t-btn" id="btnOpenSettings" title="Studio Settings & Storage">⚙</button>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         PERSISTENT NAVIGATION SIDEBAR
+         ====================================================================== -->
+    <aside class="sidebar" aria-label="Studio Modules">
+      <nav class="nav-list" id="mainNav">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-icon">⌂</span><span class="nav-label">Dashboard & Library</span></button>
+        <button class="nav-item" data-view="songwriting"><span class="nav-icon">✒</span><span class="nav-label">Songwriting Room</span></button>
+        <button class="nav-item" data-view="instrumental"><span class="nav-icon">〰</span><span class="nav-label">Instrumental & Audio</span></button>
+        <button class="nav-item" data-view="melody"><span class="nav-icon">🎹</span><span class="nav-label">Melody Piano Roll</span></button>
+        <button class="nav-item" data-view="singer"><span class="nav-icon">✦</span><span class="nav-label">Virtual Singer Lab</span></button>
+        <button class="nav-item" data-view="harmony"><span class="nav-icon">❀</span><span class="nav-label">Vocal Arrangement</span></button>
+        <button class="nav-item" data-view="multitrack"><span class="nav-icon">▤</span><span class="nav-label">Multitrack Studio</span></button>
+        <button class="nav-item" data-view="mixer"><span class="nav-icon">🎚</span><span class="nav-label">Mixing Console</span></button>
+        <button class="nav-item" data-view="assistant"><span class="nav-icon">◈</span><span class="nav-label">Arrangement Assistant</span></button>
+        <button class="nav-item" data-view="library"><span class="nav-icon">♫</span><span class="nav-label">Sound & Preset Library</span></button>
+        <button class="nav-item" data-view="export"><span class="nav-icon">⤓</span><span class="nav-label">Export & Production</span></button>
+      </nav>
+
+      <div class="sidebar-footer-text" style="padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.65); border: 1px solid var(--border-delicate); font-size: 11px; color: var(--text-muted); line-height: 1.45;">
+        <strong style="color: var(--accent-plum-dark);">100% Local Web Audio</strong><br/>
+        Zero cloud uploads or API keys. Projects persist in your browser's IndexedDB.
+      </div>
+    </aside>
+
+    <!-- ======================================================================
+         MAIN MULTI-MODULE WORKSPACE
+         ====================================================================== -->
+    <main class="workspace-main">
+
+      <!-- 01. DASHBOARD & PROJECT LIBRARY -->
+      <section class="view-panel active" id="view-dashboard">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Studio Dashboard & Project Library</h1>
+            <p class="editorial-subtitle">Create compositions from curated genre templates, open the playable demo song, or manage local IndexedDB projects.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn" id="btnLoadDemoProject">✦ Load Demo Song ("Velvet Echoes")</button>
+            <button class="btn" id="btnNewBlankProject">+ Blank Project</button>
+            <button class="btn btn-soft" id="btnImportJsonTrigger">↑ Import JSON</button>
+            <input type="file" id="inputImportJson" accept=".json" style="display:none;" />
+          </div>
+        </div>
+
+        <!-- Genre Templates Bar -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-title">
+            <span>Start From a Genre Blueprint</span>
+            <span style="font-family:var(--font-sans); font-size:12px; font-weight:500; color:var(--text-muted);">Sets tempo, scale, lyric structure & vocal character</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;" id="genreTemplateButtons"></div>
+        </div>
+
+        <!-- Search, Folder & Sort Controls -->
+        <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <div style="display:flex; gap:8px; flex:1; min-width:240px;">
+            <input type="search" id="projectSearchInput" class="input-field" placeholder="Search projects by title, genre, or folder..." style="max-width:320px;" />
+            <select id="projectFolderFilter" class="select-field" style="max-width:170px;">
+              <option value="all">All Folders</option>
+              <option value="Originals">Originals</option>
+              <option value="Demos">Demos</option>
+              <option value="Drafts">Drafts</option>
+              <option value="Favourites">★ Favourites</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-size:12px; color:var(--text-muted);">Sort:</span>
+            <select id="projectSortSelect" class="select-field" style="width:160px;">
+              <option value="updated">Last Modified</option>
+              <option value="created">Date Created</option>
+              <option value="name">Alphabetical</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Project Library Grid -->
+        <div class="grid-3" id="projectLibraryGrid"></div>
+      </section>
+
+      <!-- 02. SONGWRITING ROOM -->
+      <section class="view-panel" id="view-songwriting">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Songwriting Room</h1>
+            <p class="editorial-subtitle">Structure verses and choruses, inspect syllable counts and rhymes offline, and map lyrics directly to your melody.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <select id="newSectionTypeSelect" class="select-field" style="width:155px;">
+              <option value="Intro">Intro</option>
+              <option value="Verse">Verse</option>
+              <option value="Pre-Chorus">Pre-Chorus</option>
+              <option value="Chorus" selected>Chorus</option>
+              <option value="Bridge">Bridge</option>
+              <option value="Post-Chorus">Post-Chorus</option>
+              <option value="Breakdown">Breakdown</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <button class="btn" id="btnAddLyricSection">+ Add Section</button>
+            <button class="btn btn-primary" id="btnSendLyricsToSinger">✦ Map Syllables to Melody & Singer</button>
+          </div>
+        </div>
+
+        <!-- Song Structure Timeline Overview -->
+        <div class="card" style="margin-bottom:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Visual Song Structure Overview</strong>
+            <div id="lyricGlobalStats" style="font-family:var(--font-mono); font-size:12px; color:var(--accent-plum-dark);">0 words · 0 syllables · 0 lines · ~0:00</div>
+          </div>
+          <div id="songStructureMap" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 310px; gap:18px; align-items:start;">
+          <!-- Editable Lyric Sections List -->
+          <div id="lyricSectionsContainer"></div>
+
+          <!-- Offline Rhyme & Syllable Helper Sidebar -->
+          <div class="card" style="position:sticky; top:0;">
+            <div class="card-title"><span>Rhyme & Phonetic Desk</span></div>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Offline bundled poetic rhyme dictionary & syllable counter.</p>
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+              <input type="text" id="rhymeSearchInput" class="input-field" placeholder="Enter word (e.g. night, dream)..." value="night" />
+              <button class="btn btn-soft" id="btnFindRhymes">Find</button>
+            </div>
+            <div id="rhymeResultsBox" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;"></div>
+
+            <div style="border-top:1px solid var(--border-delicate); padding-top:12px;">
+              <strong style="font-size:12px; color:var(--accent-plum-dark);">Quick Syllable & Stress Analyzer</strong>
+              <input type="text" id="syllableProbeInput" class="input-field" style="margin-top:6px;" placeholder="Type a lyric line to inspect..." value="Dancing in the velvet starlight" />
+              <div id="syllableProbeOutput" style="margin-top:8px; font-family:var(--font-mono); font-size:11.5px; background:var(--surface-subtle); padding:8px; border-radius:8px; color:var(--text-charcoal);"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03. INSTRUMENTAL IMPORT & AUDIO PLAYER -->
+      <section class="view-panel" id="view-instrumental">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Instrumental & Backing Track Studio</h1>
+            <p class="editorial-subtitle">Import local audio files (WAV, MP3, OGG, FLAC) or synthesize an instant pastel backing instrumental.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-soft" id="btnGenSynthBacking1">✦ Generate Dreamy Synth Backing</button>
+            <button class="btn btn-soft" id="btnGenSynthBacking2">✦ Generate Lo-Fi Rhodes Backing</button>
+            <label class="btn btn-primary" style="cursor:pointer;">
+              ↑ Upload Audio File
+              <input type="file" id="inputAudioFile" accept="audio/*" style="display:none;" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Drag & Drop Zone + Metadata -->
+        <div class="card" id="audioDropZone" style="border: 2px dashed var(--accent-rose); text-align:center; padding:22px; margin-bottom:18px; cursor:pointer;">
+          <div style="font-family:var(--font-serif); font-size:19px; color:var(--accent-plum-dark); margin-bottom:4px;">Drop Instrumental Audio Here or Click to Browse</div>
+          <div style="font-size:12.5px; color:var(--text-muted);" id="instrumentalMetaInfo">Active Track: Procedural Pastel Synth Backing · 44.1 kHz · Stereo</div>
+        </div>
+
+        <!-- Interactive Canvas Waveform -->
+        <div class="card">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button class="btn btn-sm btn-primary" id="btnPreviewInstrumental">▶ Preview Backing</button>
+              <button class="btn btn-sm" id="btnStopInstrumental">⏹ Stop</button>
+              <button class="btn btn-sm" id="btnInstrMute">Mute</button>
+              <button class="btn btn-sm" id="btnInstrSolo">Solo</button>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; font-size:12px;">
+              <label>Zoom <input type="range" id="waveformZoom" min="1" max="8" step="0.5" value="1" style="width:85px;" /></label>
+              <label>Speed <input type="range" id="instrPlaybackRate" min="0.5" max="1.5" step="0.05" value="1" style="width:85px;" /> <span id="instrRateVal" style="font-family:var(--font-mono);">1.00x</span></label>
+              <label>Trim Start (s) <input type="number" id="instrTrimStart" min="0" step="0.1" value="0" style="width:62px; padding:3px 6px; border-radius:6px; border:1px solid var(--border-strong);" /></label>
+              <label>Trim End (s) <input type="number" id="instrTrimEnd" min="0.5" step="0.1" value="16" style="width:62px; padding:3px 6px; border-radius:6px; border:1px solid var(--border-strong);" /></label>
+            </div>
+          </div>
+          <div class="canvas-frame">
+            <canvas id="waveformCanvas" height="190"></canvas>
+          </div>
+          <p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Click anywhere on the waveform to seek. Non-destructive trim start/end points define the active arrangement region.</p>
+        </div>
+      </section>
+
+      <!-- 04. MELODY CREATOR & VIRTUAL PIANO ROLL -->
+      <section class="view-panel" id="view-melody">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Melody Creator & Piano Roll</h1>
+            <p class="editorial-subtitle">Compose vocal toplines and synth melodies on a scale-aware piano roll or generate deterministic melodic phrases.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-sm" id="btnPreviewMelody">▶ Audition Melody</button>
+            <button class="btn btn-sm btn-soft" id="btnGenerateMelody">✦ Algorithmic Melody</button>
+            <button class="btn btn-sm btn-danger" id="btnClearMelody">Clear Notes</button>
+          </div>
+        </div>
+
+        <!-- Piano Roll Controls & Algorithmic Generator Options -->
+        <div class="card" style="margin-bottom:14px;">
+          <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between;">
+            <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; font-size:12px;">
+              <label>Grid Snap:
+                <select id="pianoGridSnap" class="select-field" style="width:86px; padding:4px 8px;">
+                  <option value="1">1/4 Beat</option>
+                  <option value="0.5" selected>1/8 Note</option>
+                  <option value="0.25">1/16 Note</option>
+                </select>
+              </label>
+              <label>Bars:
+                <select id="pianoBarsCount" class="select-field" style="width:74px; padding:4px 8px;">
+                  <option value="4">4 Bars</option>
+                  <option value="8" selected>8 Bars</option>
+                  <option value="16">16 Bars</option>
+                </select>
+              </label>
+              <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
+                <input type="checkbox" id="pianoScaleLock" checked /> Lock to Scale
+              </label>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; font-size:12px;">
+              <label>Mood:
+                <select id="melodyGenMood" class="select-field" style="width:115px; padding:4px 8px;">
+                  <option value="dreamy">Dreamy</option>
+                  <option value="uplifting">Uplifting</option>
+                  <option value="melancholic">Melancholic</option>
+                  <option value="energetic">Energetic</option>
+                </select>
+              </label>
+              <label>Density:
+                <input type="range" id="melodyGenDensity" min="0.3" max="1" step="0.1" value="0.7" style="width:75px;" />
+              </label>
+              <span style="color:var(--text-muted);">Click grid to add/select · Drag to move · Right-click or Double-click note to delete</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-frame">
+          <canvas id="pianoRollCanvas" height="390"></canvas>
+        </div>
+      </section>
+
+      <!-- 05. VIRTUAL SINGER & VOCAL SYNTHESIS LABORATORY -->
+      <section class="view-panel" id="view-singer">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Virtual Singer & Formant Synthesis Lab</h1>
+            <p class="editorial-subtitle">Transform written lyrics and piano-roll melodies into expressive electronic singing using Web Audio formant filtering.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn" id="btnPreviewVocalSynth">▶ Preview Synthetic Vocal</button>
+            <button class="btn btn-primary" id="btnRenderFullVocal">✦ Render Vocal Track to Studio</button>
+          </div>
+        </div>
+
+        <!-- Honest Technical Disclosure -->
+        <div class="honest-notice">
+          <span style="font-size:18px;">ⓘ</span>
+          <div>
+            <strong>Transparent Audio Synthesis Notice:</strong> LYRICA STUDIO generates vocals locally in your browser using multi-oscillator harmonic excitation, resonant vowel formant filters (F1/F2/F3), pitch envelopes, and noise-burst consonant shaping. Output is an <em>electronic synthetic vocal</em> rather than a realistic AI human voice recording.
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:18px;">
+          <!-- Left: Vocal Presets & Timbre Controls -->
+          <div class="card">
+            <div class="card-title">
+              <span>Vocal Timbre & Formant Controls</span>
+              <select id="vocalPresetSelect" class="select-field" style="width:170px; padding:5px 10px;">
+                <option value="soft_pop">Soft Pop</option>
+                <option value="airy_electronic">Airy Electronic</option>
+                <option value="bright_synthetic">Bright Synthetic</option>
+                <option value="deep_synthetic">Deep Synthetic</option>
+                <option value="robotic">Robotic Vocoder</option>
+                <option value="ethereal">Ethereal</option>
+                <option value="choir_like">Choir-Like</option>
+                <option value="experimental">Experimental</option>
+              </select>
+            </div>
+            <div class="grid-2" id="vocalSlidersContainer" style="gap:12px; font-size:12px;"></div>
+          </div>
+
+          <!-- Right: Syllable-to-Note & Phoneme Editor -->
+          <div class="card">
+            <div class="card-title">
+              <span>Syllable & Phoneme Timeline Mapping</span>
+              <button class="btn btn-sm btn-soft" id="btnAutoSyncSyllables">↻ Sync From Lyrics & Melody</button>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Edit individual syllable text or phonetic vowel focus (A, E, I, O, U) paired with each melody note:</p>
+            <div class="syllable-grid" id="syllableMappingGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06. VOCAL ARRANGEMENT & HARMONY STUDIO -->
+      <section class="view-panel" id="view-harmony">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Vocal Arrangement & Harmony Studio</h1>
+            <p class="editorial-subtitle">Stack diatonic harmonies, stereo vocal doubles, octave layers, and call-and-response textures.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <select id="harmonyModeSelect" class="select-field" style="width:185px;">
+              <option value="third_above">+3rd Diatonic Harmony</option>
+              <option value="fifth_above">+5th Open Harmony</option>
+              <option value="octave_double">Octave Double (+12 / -12)</option>
+              <option value="lush_triad">Lush 3-Part Pastel Triad</option>
+            </select>
+            <button class="btn btn-soft" id="btnAddHarmonyLayer">+ Generate Harmony Layer</button>
+            <button class="btn btn-primary" id="btnPreviewVocalStack">▶ Preview Lead + Harmonies</button>
+          </div>
+        </div>
+
+        <div id="harmonyLayersContainer" class="grid-2"></div>
+      </section>
+
+      <!-- 07. MULTITRACK ARRANGEMENT WORKSPACE -->
+      <section class="view-panel" id="view-multitrack">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Multitrack Arrangement Studio</h1>
+            <p class="editorial-subtitle">Arrange instrumental audio, rendered synthetic lead vocals, harmony stacks, and synth clips on a synchronized timeline.</p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <label style="font-size:12px;">Timeline Zoom <input type="range" id="multitrackZoom" min="36" max="120" value="64" style="width:90px;" /></label>
+            <button class="btn btn-sm btn-soft" id="btnAddTrack">+ Add Synth Track</button>
+          </div>
+        </div>
+
+        <div class="card" style="padding:12px;">
+          <div id="multitrackHeaderList" style="display:grid; grid-template-columns: 210px 1fr; gap:10px;">
+            <!-- Track headers + Canvas timeline rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 08. MIXING CONSOLE & AUDIO EFFECTS -->
+      <section class="view-panel" id="view-mixer">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Mixing Console & Live DSP Rack</h1>
+            <p class="editorial-subtitle">Real-time Web Audio channel strips with 3-band EQ, compression, algorithmic reverb, stereo delay, chorus, and saturation.</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <select id="fxPresetSelector" class="select-field" style="width:180px;">
+              <option value="warm_vocal">Preset: Warm Vocal</option>
+              <option value="bright_vocal">Preset: Bright Vocal</option>
+              <option value="dreamy_vocal">Preset: Dreamy Vocal</option>
+              <option value="spacious_reverb">Preset: Spacious Reverb</option>
+              <option value="subtle_delay">Preset: Subtle Delay</option>
+              <option value="telephone">Preset: Telephone Filter</option>
+              <option value="vintage">Preset: Vintage Tape</option>
+              <option value="electronic">Preset: Electronic Texture</option>
+            </select>
+            <button class="btn btn-soft" id="btnApplyFxPreset">Apply to Selected Track</button>
+            <button class="btn" id="btnResetMixer">Reset Mixer</button>
+          </div>
+        </div>
+
+        <!-- Selected Channel DSP Insert Rack -->
+        <div class="card" style="margin-bottom:18px;" id="dspInsertRackCard">
+          <div class="card-title">
+            <span id="selectedDspTrackTitle">Channel DSP Insert Chain — Lead Synthetic Vocal</span>
+            <span style="font-size:12px; color:var(--text-muted);">Click any channel strip below to inspect & shape its effects</span>
+          </div>
+          <div class="grid-4" id="dspControlsGrid"></div>
+        </div>
+
+        <!-- Fader Bank -->
+        <div class="mixer-rack" id="mixerChannelsRack"></div>
+      </section>
+
+      <!-- 09. ARRANGEMENT ASSISTANT -->
+      <section class="view-panel" id="view-assistant">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Arrangement & Song Structure Assistant</h1>
+            <p class="editorial-subtitle">Plan dynamic arcs, section instrumentation, vocal intensity, and structural transitions using musical arrangement rules.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <select id="arrangementTemplateSelect" class="select-field" style="width:210px;">
+              <option value="verse_chorus">Modern Pop Verse–Chorus</option>
+              <option value="intro_verse_chorus">Atmospheric Intro–Verse–Chorus</option>
+              <option value="aaba">Classic AABA Songwriter Form</option>
+              <option value="cinematic">Cinematic Gradual Build</option>
+              <option value="experimental">Experimental Modular Arc</option>
+            </select>
+            <button class="btn btn-primary" id="btnApplyArrangementFormat">Apply Structure Blueprint</button>
+          </div>
+        </div>
+        <div id="arrangementAssistantGrid" class="grid-3"></div>
+      </section>
+
+      <!-- 10. SOUND LIBRARY & PRESET COLLECTION -->
+      <section class="view-panel" id="view-library">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Local Sound & Preset Library</h1>
+            <p class="editorial-subtitle">Audition built-in Web Audio synth instruments, vocal presets, FX chains, and percussion kits—all generated locally.</p>
+          </div>
+          <input type="search" id="soundLibrarySearch" class="input-field" placeholder="Filter presets..." style="max-width:260px;" />
+        </div>
+        <div class="grid-3" id="soundLibraryGrid"></div>
+      </section>
+
+      <!-- 11. EXPORT & FINAL PRODUCTION -->
+      <section class="view-panel" id="view-export">
+        <div class="section-header">
+          <div>
+            <h1 class="editorial-title">Export & Final Production Master</h1>
+            <p class="editorial-subtitle">Render your complete multi-track song or individual stems offline to uncompressed PCM WAV, or download a GitHub Pages source bundle.</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Master Render & Stems -->
+          <div class="card">
+            <div class="card-title"><span>Offline PCM WAV Master & Stems</span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; font-size:12.5px;">
+              <label>Sample Rate
+                <select id="exportSampleRate" class="select-field" style="margin-top:4px;">
+                  <option value="44100" selected>44.1 kHz (CD Standard)</option>
+                  <option value="48000">48.0 kHz (Studio Video)</option>
+                </select>
+              </label>
+              <label>Bit Depth
+                <select id="exportBitDepth" class="select-field" style="margin-top:4px;">
+                  <option value="16" selected>16-Bit PCM WAV</option>
+                  <option value="24">24-Bit PCM WAV</option>
+                </select>
+              </label>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+              <button class="btn btn-primary" id="btnRenderMasterWav">⤓ Render & Download Master WAV</button>
+              <button class="btn btn-soft" id="btnExportAllStems">⤓ Export Individual Track Stems</button>
+            </div>
+
+            <div id="exportProgressWrap" style="display:none; margin-bottom:12px;">
+              <div style="font-size:12px; margin-bottom:4px; color:var(--accent-plum-dark);" id="exportStatusLabel">Rendering offline audio...</div>
+              <div style="height:8px; background:var(--bg-blush); border-radius:99px; overflow:hidden;">
+                <div id="exportProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent-rose), var(--accent-plum)); transition:width 0.2s;"></div>
+              </div>
+            </div>
+
+            <div id="masterPreviewContainer" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border-delicate);">
+              <strong style="font-size:12.5px; color:var(--accent-plum-dark);">Rendered Master Audition:</strong>
+              <audio id="renderedMasterAudio" controls style="width:100%; margin-top:8px;"></audio>
+            </div>
+
+            <p style="font-size:11.5px; color:var(--text-muted); margin-top:12px; line-height:1.5;">
+              <strong>Browser Encoding Note:</strong> Browsers natively encode uncompressed lossless WAV cleanly via OfflineAudioContext without external WASM codecs. MP3 encoding is intentionally omitted to guarantee 100% deterministic offline operation.
+            </p>
+          </div>
+
+          <!-- Project Summary, JSON Archive & GitHub Pages Package -->
+          <div class="card">
+            <div class="card-title"><span>Project Summary & GitHub Pages Deployment</span></div>
+            <div id="finalProjectSummary" style="background:var(--surface-subtle); padding:12px; border-radius:12px; font-size:12.5px; line-height:1.7; margin-bottom:14px;"></div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+              <button class="btn" id="btnExportProjectJson">⤓ Export Project Archive (.json)</button>
+              <button class="btn btn-soft" id="btnExportGithubBundle">⤓ Download GitHub Pages Package (.html + README)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       TUTORIAL & SETTINGS MODALS + TOAST STACK
+       ======================================================================== -->
+  <div class="modal-backdrop" id="tutorialModal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 class="editorial-title" style="font-size:23px;">Welcome to ୨ৎ LYRICA STUDIO</h2>
+        <button class="t-btn" id="btnCloseTutorial">✕</button>
+      </div>
+      <p style="font-size:13.5px; color:var(--text-muted); line-height:1.6; margin-bottom:14px;">
+        LYRICA STUDIO is a self-contained browser digital audio workstation built for songwriters to compose lyrics, craft melodies, synthesize electronic singing vocals, layer harmonies, and mix complete tracks without microphones or external APIs.
+      </p>
+      <div style="background:var(--surface-subtle); padding:14px; border-radius:12px; font-size:13px; line-height:1.65; margin-bottom:16px;">
+        <strong>Quick 5-Step Production Workflow:</strong><br/>
+        1. <strong>Play immediately:</strong> Press <code>Space</code> or click <strong>▶</strong> in the top transport bar to hear the pre-loaded demo song <em>"Velvet Echoes"</em>.<br/>
+        2. <strong>Songwriting Room:</strong> Edit verses/choruses and click <em>Map Syllables to Melody & Singer</em>.<br/>
+        3. <strong>Melody Piano Roll:</strong> Click the grid to compose notes or run the deterministic melody generator.<br/>
+        4. <strong>Virtual Singer Lab:</strong> Shape vowel formants, vibrato, and presets, then click <em>Render Vocal Track to Studio</em>.<br/>
+        5. <strong>Mixing & Export:</strong> Balance faders and DSP effects, then export a 16/24-bit WAV master.
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; color:var(--text-muted);">Shortcuts: <strong>Space</strong> Play/Pause · <strong>Ctrl+S</strong> Save · <strong>Ctrl+Z</strong> Undo</span>
+        <button class="btn btn-primary" id="btnStartCreating">Start Producing</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 class="editorial-title" style="font-size:22px;">Studio Preferences & Local Storage</h2>
+        <button class="t-btn" id="btnCloseSettings">✕</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; font-size:13px;">
+        <label style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Enable Automatic IndexedDB Autosave (every 12s)</span>
+          <input type="checkbox" id="settingAutosave" checked />
+        </label>
+        <label style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Default Vocal Synthesizer Preset</span>
+          <select id="settingDefaultVocal" class="select-field" style="width:180px;">
+            <option value="soft_pop">Soft Pop</option>
+            <option value="airy_electronic">Airy Electronic</option>
+            <option value="ethereal">Ethereal</option>
+          </select>
+        </label>
+        <div style="background:var(--bg-blush); padding:12px; border-radius:12px; font-size:12px; color:var(--accent-plum-dark);">
+          <strong>Storage Architecture:</strong> All projects, lyrics, note events, and mixer settings are stored locally inside your browser's IndexedDB database (<code>LyricaStudioDB</code>). Clearing browser site data removes local projects unless exported as JSON.
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:6px;">
+          <button class="btn btn-danger btn-sm" id="btnResetAllStorage">Reset Local Studio Database</button>
+          <button class="btn btn-primary btn-sm" id="btnSaveSettings">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <!-- ========================================================================
+       COMPLETE MODULAR VANILLA JAVASCRIPT APPLICATION ENGINE
+       ======================================================================== -->
+  <script>
+    (() => {
+      'use strict';
+
+      /* ======================================================================
+         MODULE 1: MUSICAL THEORY, SCALES, RHYME DICTIONARY & PRESET DEFINITIONS
+         ====================================================================== */
+      const NOTE_NAMES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+      const SCALES = {
+        major: [0, 2, 4, 5, 7, 9, 11],
+        natural_minor: [0, 2, 3, 5, 7, 8, 10],
+        harmonic_minor: [0, 2, 3, 5, 7, 8, 11],
+        melodic_minor: [0, 2, 3, 5, 7, 9, 11],
+        pentatonic: [0, 3, 5, 7, 10]
+      };
+
+      const VOCAL_PRESETS = {
+        soft_pop: { name: 'Soft Pop', wave: 'sawtooth', formantShift: 1.02, brightness: 2600, breathiness: 0.14, vibratoDepth: 14, vibratoSpeed: 5.2, attack: 0.05, release: 0.16, sustain: 0.88, portamento: 0.04, intensity: 0.85, octave: 0 },
+        airy_electronic: { name: 'Airy Electronic', wave: 'triangle', formantShift: 1.08, brightness: 3400, breathiness: 0.34, vibratoDepth: 10, vibratoSpeed: 4.6, attack: 0.09, release: 0.24, sustain: 0.82, portamento: 0.06, intensity: 0.78, octave: 0 },
+        bright_synthetic: { name: 'Bright Synthetic', wave: 'sawtooth', formantShift: 1.12, brightness: 4200, breathiness: 0.08, vibratoDepth: 18, vibratoSpeed: 5.8, attack: 0.03, release: 0.14, sustain: 0.92, portamento: 0.03, intensity: 0.92, octave: 0 },
+        deep_synthetic: { name: 'Deep Synthetic', wave: 'sawtooth', formantShift: 0.82, brightness: 1850, breathiness: 0.12, vibratoDepth: 12, vibratoSpeed: 4.4, attack: 0.07, release: 0.2, sustain: 0.9, portamento: 0.05, intensity: 0.88, octave: -1 },
+        robotic: { name: 'Robotic Vocoder', wave: 'square', formantShift: 1.0, brightness: 3100, breathiness: 0.04, vibratoDepth: 0, vibratoSpeed: 0, attack: 0.01, release: 0.08, sustain: 0.95, portamento: 0.0, intensity: 0.9, octave: 0 },
+        ethereal: { name: 'Ethereal', wave: 'sine', formantShift: 1.15, brightness: 3800, breathiness: 0.28, vibratoDepth: 22, vibratoSpeed: 4.9, attack: 0.14, release: 0.35, sustain: 0.85, portamento: 0.09, intensity: 0.76, octave: 0 },
+        choir_like: { name: 'Choir-Like', wave: 'sawtooth', formantShift: 0.96, brightness: 2400, breathiness: 0.22, vibratoDepth: 20, vibratoSpeed: 5.0, attack: 0.16, release: 0.32, sustain: 0.9, portamento: 0.07, intensity: 0.84, octave: 0 },
+        experimental: { name: 'Experimental', wave: 'square', formantShift: 1.26, brightness: 4600, breathiness: 0.25, vibratoDepth: 34, vibratoSpeed: 7.2, attack: 0.04, release: 0.28, sustain: 0.8, portamento: 0.12, intensity: 0.9, octave: 0 }
+      };
+
+      const VOWEL_FORMANTS = {
+        A: [730, 1090, 2440],
+        E: [530, 1840, 2480],
+        I: [390, 1990, 2550],
+        O: [570, 840, 2410],
+        U: [440, 1020, 2240]
+      };
+
+      const FX_PRESETS = {
+        warm_vocal: { eqLow: 3.5, eqMid: -1.5, eqHigh: 2.0, compThresh: -20, reverb: 0.28, delay: 0.14, chorus: 0.18, drive: 0.08 },
+        bright_vocal: { eqLow: -2.0, eqMid: 2.5, eqHigh: 5.5, compThresh: -18, reverb: 0.24, delay: 0.16, chorus: 0.22, drive: 0.05 },
+        dreamy_vocal: { eqLow: 1.0, eqMid: -2.0, eqHigh: 4.0, compThresh: -22, reverb: 0.56, delay: 0.34, chorus: 0.42, drive: 0.04 },
+        spacious_reverb: { eqLow: 0, eqMid: 0, eqHigh: 2.5, compThresh: -20, reverb: 0.68, delay: 0.22, chorus: 0.25, drive: 0.0 },
+        subtle_delay: { eqLow: 0, eqMid: 1.0, eqHigh: 1.5, compThresh: -19, reverb: 0.2, delay: 0.32, chorus: 0.1, drive: 0.0 },
+        telephone: { eqLow: -14, eqMid: 7.5, eqHigh: -12, compThresh: -14, reverb: 0.1, delay: 0.08, chorus: 0.0, drive: 0.35 },
+        vintage: { eqLow: 4.0, eqMid: 1.5, eqHigh: -4.5, compThresh: -16, reverb: 0.3, delay: 0.18, chorus: 0.28, drive: 0.24 },
+        electronic: { eqLow: 3.0, eqMid: -2.5, eqHigh: 4.5, compThresh: -15, reverb: 0.38, delay: 0.28, chorus: 0.48, drive: 0.18 }
+      };
+
+      const GENRE_TEMPLATES = [
+        { name: 'Pastel Dream Pop', genre: 'Pop', bpm: 102, key: 'A', scale: 'natural_minor', vocal: 'soft_pop', color: 'linear-gradient(135deg,#D98B9E,#A486C6)' },
+        { name: 'Velvet Midnight R&B', genre: 'R&B', bpm: 84, key: 'F', scale: 'pentatonic', vocal: 'airy_electronic', color: 'linear-gradient(135deg,#6B4E71,#D98B9E)' },
+        { name: 'Indie Tape Ballad', genre: 'Indie', bpm: 92, key: 'C', scale: 'major', vocal: 'ethereal', color: 'linear-gradient(135deg,#E5A983,#D98B9E)' },
+        { name: 'Neon Synthwave', genre: 'Electronic', bpm: 118, key: 'E', scale: 'natural_minor', vocal: 'bright_synthetic', color: 'linear-gradient(135deg,#8B74BD,#4B3550)' },
+        { name: 'Alt Shoegaze Mist', genre: 'Alternative', bpm: 98, key: 'D', scale: 'melodic_minor', vocal: 'choir_like', color: 'linear-gradient(135deg,#B8657A,#6B4E71)' },
+        { name: 'Acoustic Chamber', genre: 'Acoustic', bpm: 88, key: 'G', scale: 'major', vocal: 'soft_pop', color: 'linear-gradient(135deg,#D6A28C,#9E7B9B)' },
+        { name: 'Cinematic Overture', genre: 'Cinematic', bpm: 76, key: 'C', scale: 'harmonic_minor', vocal: 'ethereal', color: 'linear-gradient(135deg,#4B3550,#A486C6)' },
+        { name: 'Avant-Garde Vocaloid', genre: 'Experimental', bpm: 126, key: 'F#', scale: 'harmonic_minor', vocal: 'experimental', color: 'linear-gradient(135deg,#D98B9E,#4B3550)' },
+        { name: 'Pastel Pop Rock', genre: 'Rock', bpm: 124, key: 'E', scale: 'major', vocal: 'bright_synthetic', color: 'linear-gradient(135deg,#C46D82,#7B5E83)' }
+      ];
+
+      const RHYME_BANK = {
+        night: ['light', 'starlight', 'flight', 'sight', 'bright', 'tonight', 'quiet', 'ignite', 'midnight'],
+        dream: ['stream', 'gleam', 'beam', 'seem', 'theme', 'daydream', 'moonbeam'],
+        heart: ['start', 'apart', 'art', 'part', 'chart', 'depart', 'sweetheart'],
+        love: ['above', 'dove', 'shove', 'beloved', 'gloves'],
+        sky: ['high', 'fly', 'sigh', 'by', 'lullaby', 'firefly', 'goodbye'],
+        rain: ['pain', 'vain', 'again', 'train', 'windowpane', 'refrain', 'remain'],
+        glow: ['slow', 'flow', 'know', 'below', 'shadow', 'echo', 'tomorrow'],
+        time: ['rhyme', 'chime', 'climb', 'sublime', 'prime'],
+        voice: ['choice', 'rejoice', 'noise', 'poise'],
+        star: ['far', 'scar', 'guitar', 'afar', 'jar']
+      };
+
+      const SECTION_COLORS = {
+        'Intro': '#A486C6',
+        'Verse': '#D98B9E',
+        'Pre-Chorus': '#E5A983',
+        'Chorus': '#6B4E71',
+        'Bridge': '#86A8C6',
+        'Post-Chorus': '#C46D82',
+        'Breakdown': '#968B9A',
+        'Outro': '#7E6586'
+      };
+
+      function midiToFreq(midi) {
+        return 440 * Math.pow(2, (midi - 69) / 12);
+      }
+
+      function midiToNoteName(midi) {
+        const name = NOTE_NAMES[midi % 12];
+        const oct = Math.floor(midi / 12) - 1;
+        return `${name}${oct}`;
+      }
+
+      function countSyllables(word) {
+        const clean = word.toLowerCase().replace(/[^a-z]/g, '');
+        if (!clean) return 0;
+        if (clean.length <= 3) return 1;
+        const stripped = clean.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '').replace(/^y/, '');
+        const matches = stripped.match(/[aeiouy]{1,2}/g);
+        return matches ? Math.max(1, matches.length) : 1;
+      }
+
+      function splitWordIntoSyllables(word) {
+        const clean = word.replace(/[^a-zA-Z']/g, '');
+        if (!clean) return [];
+        const parts = clean.match(/[^aeiouyAEIOUY]*[aeiouyAEIOUY]+(?:[^aeiouyAEIOUY](?![aeiouyAEIOUY]))?/g);
+        return parts && parts.length ? parts : [clean];
+      }
+
+      function detectPrimaryVowel(syllable) {
+        const s = syllable.toUpperCase();
+        if (s.includes('EE') || s.includes('I') || s.includes('Y')) return 'I';
+        if (s.includes('OO') || s.includes('U')) return 'U';
+        if (s.includes('O')) return 'O';
+        if (s.includes('E')) return 'E';
+        return 'A';
+      }
+
+      /* ======================================================================
+         MODULE 2: INDEXEDDB PERSISTENCE & PROJECT STATE FACTORY
+         ====================================================================== */
+      const DB_NAME = 'LyricaStudioDB';
+      const DB_VERSION = 1;
+      let dbInstance = null;
+
+      function openStudioDB() {
+        return new Promise((resolve) => {
+          if (!window.indexedDB) return resolve(null);
+          const req = indexedDB.open(DB_NAME, DB_VERSION);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('projects')) {
+              db.createObjectStore('projects', { keyPath: 'id' });
+            }
+          };
+          req.onsuccess = (e) => {
+            dbInstance = e.target.result;
+            resolve(dbInstance);
+          };
+          req.onerror = () => resolve(null);
+        });
+      }
+
+      async function saveProjectToDB(project) {
+        project.updatedAt = new Date().toISOString();
+        const serializable = JSON.parse(JSON.stringify(project));
+        if (dbInstance) {
+          return new Promise((resolve) => {
+            const tx = dbInstance.transaction('projects', 'readwrite');
+            tx.objectStore('projects').put(serializable);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => resolve(false);
+          });
+        } else {
+          const all = JSON.parse(localStorage.getItem('lyrica_projects') || '{}');
+          all[project.id] = serializable;
+          localStorage.setItem('lyrica_projects', JSON.stringify(all));
+          return true;
+        }
+      }
+
+      async function getAllProjectsFromDB() {
+        if (dbInstance) {
+          return new Promise((resolve) => {
+            const tx = dbInstance.transaction('projects', 'readonly');
+            const req = tx.objectStore('projects').getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => resolve([]);
+          });
+        } else {
+          const all = JSON.parse(localStorage.getItem('lyrica_projects') || '{}');
+          return Object.values(all);
+        }
+      }
+
+      async function deleteProjectFromDB(id) {
+        if (dbInstance) {
+          return new Promise((resolve) => {
+            const tx = dbInstance.transaction('projects', 'readwrite');
+            tx.objectStore('projects').delete(id);
+            tx.oncomplete = () => resolve(true);
+          });
+        } else {
+          const all = JSON.parse(localStorage.getItem('lyrica_projects') || '{}');
+          delete all[id];
+          localStorage.setItem('lyrica_projects', JSON.stringify(all));
+          return true;
+        }
+      }
+
+      function createDemoProject() {
+        const now = new Date().toISOString();
+        return {
+          id: 'proj_velvet_echoes_demo',
+          title: 'Velvet Echoes',
+          genre: 'Pop',
+          folder: 'Demos',
+          favourite: true,
+          coverGradient: 'linear-gradient(135deg, #D98B9E 0%, #6B4E71 100%)',
+          createdAt: now,
+          updatedAt: now,
+          bpm: 96,
+          key: 'A',
+          scale: 'natural_minor',
+          timeSig: '4/4',
+          sections: [
+            {
+              id: 'sec_1',
+              type: 'Verse',
+              name: 'Verse 1',
+              delivery: 'breathy',
+              notes: 'Soft intimate phrasing over warm synth pads',
+              lyrics: 'Silver dust on the window glass\nCounting echoes as the hours pass\nSoft pink shadows on the studio floor\nI found a melody I never heard before'
+            },
+            {
+              id: 'sec_2',
+              type: 'Chorus',
+              name: 'Chorus',
+              delivery: 'layered',
+              notes: 'Open vowel sustain with +3rd pastel harmony',
+              lyrics: 'Sing into the velvet night\nTurn every whisper into golden light\nEven without a voice of my own\nWe built a universe in pastel tone'
+            },
+            {
+              id: 'sec_3',
+              type: 'Outro',
+              name: 'Outro',
+              delivery: 'whispered',
+              notes: 'Fading sustained high notes',
+              lyrics: 'Velvet echoes in the starlight\nFading softly into midnight'
+            }
+          ],
+          melodyNotes: [
+            { id: 'n1', pitch: 69, start: 0, duration: 1, velocity: 0.85 },
+            { id: 'n2', pitch: 72, start: 1, duration: 1, velocity: 0.85 },
+            { id: 'n3', pitch: 71, start: 2, duration: 1, velocity: 0.82 },
+            { id: 'n4', pitch: 69, start: 3, duration: 1, velocity: 0.8 },
+            { id: 'n5', pitch: 67, start: 4, duration: 1.5, velocity: 0.88 },
+            { id: 'n6', pitch: 69, start: 5.5, duration: 0.5, velocity: 0.78 },
+            { id: 'n7', pitch: 72, start: 6, duration: 2, velocity: 0.9 },
+
+            { id: 'n8', pitch: 74, start: 8, duration: 1, velocity: 0.9 },
+            { id: 'n9', pitch: 76, start: 9, duration: 1, velocity: 0.92 },
+            { id: 'n10', pitch: 74, start: 10, duration: 1, velocity: 0.85 },
+            { id: 'n11', pitch: 72, start: 11, duration: 1, velocity: 0.84 },
+            { id: 'n12', pitch: 71, start: 12, duration: 1, velocity: 0.86 },
+            { id: 'n13', pitch: 72, start: 13, duration: 1, velocity: 0.86 },
+            { id: 'n14', pitch: 69, start: 14, duration: 2, velocity: 0.92 }
+          ],
+          syllableMap: [
+            { text: 'Sil-', vowel: 'I', pitch: 69, start: 0, duration: 1 },
+            { text: 'ver', vowel: 'E', pitch: 72, start: 1, duration: 1 },
+            { text: 'dust', vowel: 'U', pitch: 71, start: 2, duration: 1 },
+            { text: 'on', vowel: 'O', pitch: 69, start: 3, duration: 1 },
+            { text: 'the', vowel: 'E', pitch: 67, start: 4, duration: 1.5 },
+            { text: 'win-', vowel: 'I', pitch: 69, start: 5.5, duration: 0.5 },
+            { text: 'dow', vowel: 'O', pitch: 72, start: 6, duration: 2 },
+            { text: 'Sing', vowel: 'I', pitch: 74, start: 8, duration: 1 },
+            { text: 'in-', vowel: 'I', pitch: 76, start: 9, duration: 1 },
+            { text: 'to', vowel: 'U', pitch: 74, start: 10, duration: 1 },
+            { text: 'the', vowel: 'E', pitch: 72, start: 11, duration: 1 },
+            { text: 'vel-', vowel: 'E', pitch: 71, start: 12, duration: 1 },
+            { text: 'vet', vowel: 'E', pitch: 72, start: 13, duration: 1 },
+            { text: 'night', vowel: 'A', pitch: 69, start: 14, duration: 2 }
+          ],
+          vocalSettings: { ...VOCAL_PRESETS.soft_pop, presetId: 'soft_pop' },
+          harmonyLayers: [
+            { id: 'harm_1', name: 'Pastel +3rd Harmony', semitones: 3, volume: 0.65, pan: -0.45, delayMs: 14, presetId: 'airy_electronic', enabled: true },
+            { id: 'harm_2', name: 'Ethereal Octave Double', semitones: 12, volume: 0.45, pan: 0.45, delayMs: 22, presetId: 'ethereal', enabled: true }
+          ],
+          tracks: [
+            { id: 'trk_instr', name: 'Instrumental Backing', type: 'instrumental', color: '#A486C6', volume: 0.78, pan: 0, mute: false, solo: false, clipStart: 0, clipBars: 8, fx: { ...FX_PRESETS.vintage } },
+            { id: 'trk_lead', name: 'Lead Synthetic Vocal', type: 'vocal', color: '#D98B9E', volume: 0.92, pan: 0, mute: false, solo: false, clipStart: 0, clipBars: 8, fx: { ...FX_PRESETS.warm_vocal } },
+            { id: 'trk_harm', name: 'Harmony Stack', type: 'harmony', color: '#E5A983', volume: 0.72, pan: 0.15, mute: false, solo: false, clipStart: 0, clipBars: 8, fx: { ...FX_PRESETS.dreamy_vocal } },
+            { id: 'trk_synth', name: 'Piano Roll Lead Synth', type: 'synth', color: '#6B4E71', volume: 0.52, pan: -0.2, mute: false, solo: false, clipStart: 0, clipBars: 8, fx: { ...FX_PRESETS.subtle_delay } }
+          ],
+          instrumentalTrim: { start: 0, end: 20, rate: 1.0, name: 'Procedural Dreamy Synth Pad & Pulse' }
+        };
+      }
+
+      /* ======================================================================
+         MODULE 3: APPLICATION STATE & UNDO/REDO HISTORY
+         ====================================================================== */
+      const state = {
+        projects: [],
+        currentProject: createDemoProject(),
+        selectedMixerTrackId: 'trk_lead',
+        isPlaying: false,
+        loopEnabled: true,
+        metronomeEnabled: false,
+        playheadBeat: 0,
+        lastFrameTime: 0,
+        undoStack: [],
+        redoStack: [],
+        instrumentalBuffer: null,
+        renderedVocalBuffer: null,
+        renderedHarmonyBuffer: null,
+        activeNodes: [],
+        analyserMap: {}
+      };
+
+      function pushUndoSnapshot() {
+        const snap = JSON.stringify(state.currentProject);
+        if (state.undoStack[state.undoStack.length - 1] !== snap) {
+          state.undoStack.push(snap);
+          if (state.undoStack.length > 25) state.undoStack.shift();
+          state.redoStack = [];
+        }
+      }
+
+      function undoAction() {
+        if (!state.undoStack.length) return showToast('Nothing to undo.');
+        state.redoStack.push(JSON.stringify(state.currentProject));
+        state.currentProject = JSON.parse(state.undoStack.pop());
+        refreshEntireUI();
+        showToast('Undid last change.');
+      }
+
+      function redoAction() {
+        if (!state.redoStack.length) return showToast('Nothing to redo.');
+        state.undoStack.push(JSON.stringify(state.currentProject));
+        state.currentProject = JSON.parse(state.redoStack.pop());
+        refreshEntireUI();
+        showToast('Redid change.');
+      }
+
+      function showToast(msg) {
+        const stack = document.getElementById('toastStack');
+        const el = document.createElement('div');
+        el.className = 'toast-msg';
+        el.textContent = msg;
+        stack.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 220); }, 2800);
+      }
+
+      /* ======================================================================
+         MODULE 4: REAL WEB AUDIO API ENGINE (SYNTH, FORMANTS, DSP & OFFLINE WAV)
+         ====================================================================== */
+      let audioCtx = null;
+      let masterGainNode = null;
+      let masterAnalyser = null;
+
+      function ensureAudioContext() {
+        if (!audioCtx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AC();
+          masterGainNode = audioCtx.createGain();
+          masterGainNode.gain.value = 0.88;
+          masterAnalyser = audioCtx.createAnalyser();
+          masterAnalyser.fftSize = 256;
+          masterGainNode.connect(masterAnalyser);
+          masterAnalyser.connect(audioCtx.destination);
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      // Generate an algorithmic stereo impulse response for ConvolverNode reverb
+      function createReverbImpulse(ctx, duration = 2.1, decay = 2.4) {
+        const rate = ctx.sampleRate;
+        const length = Math.floor(rate * duration);
+        const impulse = ctx.createBuffer(2, length, rate);
+        for (let ch = 0; ch < 2; ch++) {
+          const data = impulse.getChannelData(ch);
+          for (let i = 0; i < length; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+          }
+        }
+        return impulse;
+      }
+
+      // Build a complete live or offline DSP channel strip (3-band EQ, Compressor, Delay, Reverb, Gain, Pan)
+      function buildChannelDspChain(ctx, track, destinationNode, trackIdForMeter = null) {
+        const input = ctx.createGain();
+        const fx = track.fx || FX_PRESETS.warm_vocal;
+
+        const eqLow = ctx.createBiquadFilter();
+        eqLow.type = 'lowshelf';
+        eqLow.frequency.value = 220;
+        eqLow.gain.value = fx.eqLow || 0;
+
+        const eqMid = ctx.createBiquadFilter();
+        eqMid.type = 'peaking';
+        eqMid.frequency.value = 1400;
+        eqMid.Q.value = 1.1;
+        eqMid.gain.value = fx.eqMid || 0;
+
+        const eqHigh = ctx.createBiquadFilter();
+        eqHigh.type = 'highshelf';
+        eqHigh.frequency.value = 4200;
+        eqHigh.gain.value = fx.eqHigh || 0;
+
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = fx.compThresh || -18;
+        comp.ratio.value = 3.5;
+        comp.attack.value = 0.015;
+        comp.release.value = 0.18;
+
+        const dryGain = ctx.createGain();
+        dryGain.gain.value = 1.0;
+
+        const delayNode = ctx.createDelay(1.5);
+        delayNode.delayTime.value = 0.28;
+        const delayFeedback = ctx.createGain();
+        delayFeedback.gain.value = 0.32;
+        const delayWet = ctx.createGain();
+        delayWet.gain.value = fx.delay || 0;
+        delayNode.connect(delayFeedback);
+        delayFeedback.connect(delayNode);
+
+        const convolver = ctx.createConvolver();
+        convolver.buffer = createReverbImpulse(ctx, 1.9, 2.5);
+        const reverbWet = ctx.createGain();
+        reverbWet.gain.value = fx.reverb || 0;
+
+        const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+        if (panner) panner.pan.value = track.pan || 0;
+
+        const faderGain = ctx.createGain();
+        const anySolo = state.currentProject.tracks.some(t => t.solo);
+        const audible = !track.mute && (!anySolo || track.solo);
+        faderGain.gain.value = audible ? (track.volume ?? 0.8) : 0;
+
+        input.connect(eqLow);
+        eqLow.connect(eqMid);
+        eqMid.connect(eqHigh);
+        eqHigh.connect(comp);
+
+        comp.connect(dryGain);
+        comp.connect(delayNode);
+        delayNode.connect(delayWet);
+        comp.connect(convolver);
+        convolver.connect(reverbWet);
+
+        const sumNode = ctx.createGain();
+        dryGain.connect(sumNode);
+        delayWet.connect(sumNode);
+        reverbWet.connect(sumNode);
+
+        if (panner) {
+          sumNode.connect(panner);
+          panner.connect(faderGain);
+        } else {
+          sumNode.connect(faderGain);
+        }
+
+        if (trackIdForMeter && ctx.createAnalyser) {
+          const analyser = ctx.createAnalyser();
+          analyser.fftSize = 128;
+          faderGain.connect(analyser);
+          analyser.connect(destinationNode);
+          state.analyserMap[trackIdForMeter] = analyser;
+        } else {
+          faderGain.connect(destinationNode);
+        }
+
+        return input;
+      }
+
+      // Procedural Synthetic Instrumental Generator (Lush Pastel Pad + Rhodes + Pulse)
+      async function generateProceduralInstrumental(style = 'dreamy') {
+        const sampleRate = 44100;
+        const duration = 20; // 20 seconds loopable backing
+        const offCtx = new OfflineAudioContext(2, sampleRate * duration, sampleRate);
+        const bpm = state.currentProject.bpm || 96;
+        const beatSec = 60 / bpm;
+
+        const rootMidi = 45 + NOTE_NAMES.indexOf(state.currentProject.key || 'A');
+        const chords = style === 'lofi'
+          ? [[0, 3, 7, 10], [-4, 0, 3, 7], [-7, -4, 0, 3], [-5, -2, 2, 5]]
+          : [[0, 3, 7, 12], [-2, 2, 5, 10], [-4, 0, 3, 7], [-5, -1, 2, 7]];
+
+        const barSec = beatSec * 4;
+        for (let bar = 0; bar < Math.ceil(duration / barSec); bar++) {
+          const t0 = bar * barSec;
+          const chord = chords[bar % chords.length];
+
+          // Warm Chord Pad
+          chord.forEach((interval) => {
+            const osc = offCtx.createOscillator();
+            const filter = offCtx.createBiquadFilter();
+            const gain = offCtx.createGain();
+            osc.type = style === 'lofi' ? 'triangle' : 'sawtooth';
+            osc.frequency.value = midiToFreq(rootMidi + interval + 12);
+            filter.type = 'lowpass';
+            filter.frequency.value = style === 'lofi' ? 950 : 1350;
+
+            gain.gain.setValueAtTime(0.0001, t0);
+            gain.gain.linearRampToValueAtTime(0.065, t0 + 0.35);
+            gain.gain.setValueAtTime(0.06, t0 + barSec - 0.3);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + barSec);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(offCtx.destination);
+            osc.start(t0);
+            osc.stop(t0 + barSec);
+          });
+
+          // Sub Bass Root
+          const sub = offCtx.createOscillator();
+          const subGain = offCtx.createGain();
+          sub.type = 'sine';
+          sub.frequency.value = midiToFreq(rootMidi + chord[0] - 12);
+          subGain.gain.setValueAtTime(0.001, t0);
+          subGain.gain.linearRampToValueAtTime(0.16, t0 + 0.08);
+          subGain.gain.exponentialRampToValueAtTime(0.001, t0 + barSec);
+          sub.connect(subGain);
+          subGain.connect(offCtx.destination);
+          sub.start(t0);
+          sub.stop(t0 + barSec);
+
+          // Soft Lo-Fi Kick & Rim Pulse on beats
+          for (let b = 0; b < 4; b++) {
+            const bt = t0 + b * beatSec;
+            if (b === 0 || b === 2) {
+              const kick = offCtx.createOscillator();
+              const kg = offCtx.createGain();
+              kick.frequency.setValueAtTime(115, bt);
+              kick.frequency.exponentialRampToValueAtTime(42, bt + 0.14);
+              kg.gain.setValueAtTime(0.22, bt);
+              kg.gain.exponentialRampToValueAtTime(0.001, bt + 0.18);
+              kick.connect(kg);
+              kg.connect(offCtx.destination);
+              kick.start(bt);
+              kick.stop(bt + 0.2);
+            }
+            if (b === 1 || b === 3) {
+              const rim = offCtx.createOscillator();
+              const rg = offCtx.createGain();
+              rim.type = 'triangle';
+              rim.frequency.setValueAtTime(420, bt);
+              rg.gain.setValueAtTime(0.07, bt);
+              rg.gain.exponentialRampToValueAtTime(0.001, bt + 0.07);
+              rim.connect(rg);
+              rg.connect(offCtx.destination);
+              rim.start(bt);
+              rim.stop(bt + 0.08);
+            }
+          }
+        }
+
+        const rendered = await offCtx.startRendering();
+        state.instrumentalBuffer = rendered;
+        state.currentProject.instrumentalTrim.start = 0;
+        state.currentProject.instrumentalTrim.end = Number(rendered.duration.toFixed(1));
+        state.currentProject.instrumentalTrim.name = style === 'lofi'
+          ? 'Procedural Lo-Fi Rhodes & Sub Backing'
+          : 'Procedural Dreamy Synth Pad & Pulse';
+        drawWaveformCanvas();
+        drawMultitrackTimeline();
+      }
+
+      // Formant & Phoneme Vocal Synthesizer (Schedules syllable notes into any AudioContext)
+      function scheduleSyntheticVocalPerformance(ctx, destNode, syllables, settings, semitoneOffset = 0, delayOffsetSec = 0) {
+        const bpm = state.currentProject.bpm || 96;
+        const beatSec = 60 / bpm;
+        const now = ctx.currentTime + 0.03 + delayOffsetSec;
+
+        syllables.forEach((syl, idx) => {
+          const startTime = now + syl.start * beatSec;
+          const durSec = Math.max(0.14, syl.duration * beatSec * 0.96);
+          const pitchMidi = syl.pitch + semitoneOffset + (settings.octave || 0) * 12;
+          const freq = midiToFreq(pitchMidi);
+
+          // Primary glottal excitation oscillator + sub-harmonic warmth
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          osc1.type = settings.wave || 'sawtooth';
+          osc2.type = 'triangle';
+          osc1.frequency.setValueAtTime(freq, startTime);
+          osc2.frequency.setValueAtTime(freq * 1.003, startTime);
+
+          // Portamento glide from previous syllable
+          if (idx > 0 && settings.portamento > 0) {
+            const prevFreq = midiToFreq(syllables[idx - 1].pitch + semitoneOffset + (settings.octave || 0) * 12);
+            osc1.frequency.setValueAtTime(prevFreq, startTime);
+            osc1.frequency.exponentialRampToValueAtTime(freq, startTime + settings.portamento);
+          }
+
+          // Vibrato LFO
+          if (settings.vibratoDepth > 0 && settings.vibratoSpeed > 0) {
+            const lfo = ctx.createOscillator();
+            const lfoGain = ctx.createGain();
+            lfo.frequency.value = settings.vibratoSpeed;
+            lfoGain.gain.setValueAtTime(0, startTime);
+            lfoGain.gain.linearRampToValueAtTime(settings.vibratoDepth, startTime + Math.min(0.25, durSec * 0.5));
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc1.frequency);
+            lfoGain.connect(osc2.frequency);
+            lfo.start(startTime);
+            lfo.stop(startTime + durSec + 0.1);
+          }
+
+          // Parallel Vowel Formant Bandpass Filter Bank (F1, F2, F3)
+          const formants = VOWEL_FORMANTS[syl.vowel || 'A'] || VOWEL_FORMANTS.A;
+          const fShift = settings.formantShift || 1.0;
+          const formantSum = ctx.createGain();
+          formantSum.gain.value = 0.55;
+
+          formants.forEach((fFreq, fIdx) => {
+            const bp = ctx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.frequency.value = Math.min(8000, fFreq * fShift);
+            bp.Q.value = fIdx === 0 ? 5.5 : (fIdx === 1 ? 7.0 : 8.5);
+            const bandGain = ctx.createGain();
+            bandGain.gain.value = fIdx === 0 ? 1.1 : (fIdx === 1 ? 0.75 : 0.4);
+            osc1.connect(bp);
+            osc2.connect(bp);
+            bp.connect(bandGain);
+            bandGain.connect(formantSum);
+          });
+
+          // Breathiness & Consonant Aspirate Noise Burst
+          const noiseLen = Math.floor(ctx.sampleRate * (durSec + 0.05));
+          const noiseBuf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
+          const nData = noiseBuf.getChannelData(0);
+          for (let i = 0; i < noiseLen; i++) nData[i] = Math.random() * 2 - 1;
+          const noiseSrc = ctx.createBufferSource();
+          noiseSrc.buffer = noiseBuf;
+          const noiseFilter = ctx.createBiquadFilter();
+          noiseFilter.type = 'bandpass';
+          noiseFilter.frequency.value = 3200;
+          const noiseGain = ctx.createGain();
+          const hasConsonant = /^[bcdfghjklmnpqrstvwxyz]/i.test(syl.text.trim());
+          noiseGain.gain.setValueAtTime(hasConsonant ? 0.16 : (settings.breathiness * 0.08), startTime);
+          noiseGain.gain.exponentialRampToValueAtTime(Math.max(0.002, settings.breathiness * 0.06), startTime + 0.06);
+          noiseSrc.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(formantSum);
+
+          // Brightness Lowpass & ADSR Vocal Envelope
+          const brightFilter = ctx.createBiquadFilter();
+          brightFilter.type = 'lowpass';
+          brightFilter.frequency.value = settings.brightness || 2800;
+
+          const env = ctx.createGain();
+          const peak = 0.34 * (settings.intensity || 0.85);
+          const atk = Math.min(settings.attack || 0.05, durSec * 0.4);
+          const rel = Math.min(settings.release || 0.15, 0.45);
+          env.gain.setValueAtTime(0.0001, startTime);
+          env.gain.linearRampToValueAtTime(peak, startTime + atk);
+          env.gain.setValueAtTime(peak * (settings.sustain || 0.85), startTime + Math.max(atk, durSec - 0.04));
+          env.gain.exponentialRampToValueAtTime(0.0001, startTime + durSec + rel);
+
+          formantSum.connect(brightFilter);
+          brightFilter.connect(env);
+          env.connect(destNode);
+
+          osc1.start(startTime);
+          osc2.start(startTime);
+          noiseSrc.start(startTime);
+          osc1.stop(startTime + durSec + rel + 0.02);
+          osc2.stop(startTime + durSec + rel + 0.02);
+          noiseSrc.stop(startTime + durSec + rel + 0.02);
+
+          if (ctx === audioCtx) {
+            state.activeNodes.push(osc1, osc2, noiseSrc);
+          }
+        });
+      }
+
+      // Render Lead Vocal & Harmony Layers into AudioBuffers for Multitrack & Export
+      async function renderVocalsToBuffers(silent = false) {
+        const syllables = state.currentProject.syllableMap;
+        if (!syllables || !syllables.length) {
+          if (!silent) showToast('No syllables mapped yet. Add lyrics or melody notes first.');
+          return;
+        }
+        const bpm = state.currentProject.bpm || 96;
+        const beatSec = 60 / bpm;
+        const maxBeat = syllables.reduce((m, s) => Math.max(m, s.start + s.duration), 8);
+        const totalSec = Math.ceil(maxBeat * beatSec) + 2;
+        const sr = 44100;
+
+        // Render Lead Vocal Buffer
+        const leadCtx = new OfflineAudioContext(2, sr * totalSec, sr);
+        scheduleSyntheticVocalPerformance(leadCtx, leadCtx.destination, syllables, state.currentProject.vocalSettings, 0, 0);
+        state.renderedVocalBuffer = await leadCtx.startRendering();
+
+        // Render Enabled Harmony Layers Buffer
+        const harmCtx = new OfflineAudioContext(2, sr * totalSec, sr);
+        const enabledLayers = (state.currentProject.harmonyLayers || []).filter(l => l.enabled);
+        enabledLayers.forEach(layer => {
+          const preset = VOCAL_PRESETS[layer.presetId] || state.currentProject.vocalSettings;
+          const layerGain = harmCtx.createGain();
+          layerGain.gain.value = layer.volume ?? 0.6;
+          const panner = harmCtx.createStereoPanner();
+          panner.pan.value = layer.pan ?? 0;
+          layerGain.connect(panner);
+          panner.connect(harmCtx.destination);
+          scheduleSyntheticVocalPerformance(harmCtx, layerGain, syllables, preset, layer.semitones || 0, (layer.delayMs || 0) / 1000);
+        });
+        state.renderedHarmonyBuffer = await harmCtx.startRendering();
+
+        drawMultitrackTimeline();
+        if (!silent) showToast('Synthetic Lead & Harmony vocals rendered to Multitrack Studio!');
+      }
+
+      /* ======================================================================
+         MODULE 5: TRANSPORT PLAYBACK ENGINE & REAL-TIME METERS
+         ====================================================================== */
+      function stopAllAudioPlayback() {
+        state.isPlaying = false;
+        state.activeNodes.forEach(n => { try { n.stop(); n.disconnect(); } catch (e) {} });
+        state.activeNodes = [];
+        document.getElementById('btnTransportPlay').textContent = '▶';
+      }
+
+      async function startMasterPlayback() {
+        const ctx = ensureAudioContext();
+        stopAllAudioPlayback();
+
+        if (!state.instrumentalBuffer) await generateProceduralInstrumental('dreamy');
+        if (!state.renderedVocalBuffer) await renderVocalsToBuffers(true);
+
+        state.isPlaying = true;
+        state.lastFrameTime = performance.now();
+        document.getElementById('btnTransportPlay').textContent = '❚❚';
+
+        const tracks = state.currentProject.tracks;
+        const bpm = state.currentProject.bpm || 96;
+        const beatSec = 60 / bpm;
+        const startOffsetSec = state.playheadBeat * beatSec;
+
+        // 1. Instrumental Track
+        const instrTrack = tracks.find(t => t.type === 'instrumental');
+        if (instrTrack && state.instrumentalBuffer) {
+          const chain = buildChannelDspChain(ctx, instrTrack, masterGainNode, instrTrack.id);
+          const src = ctx.createBufferSource();
+          src.buffer = state.instrumentalBuffer;
+          src.loop = state.loopEnabled;
+          src.playbackRate.value = state.currentProject.instrumentalTrim.rate || 1.0;
+          const trimStart = state.currentProject.instrumentalTrim.start || 0;
+          src.start(ctx.currentTime + 0.02, Math.min(trimStart + startOffsetSec, src.buffer.duration - 0.1));
+          src.connect(chain);
+          state.activeNodes.push(src);
+        }
+
+        // 2. Lead Vocal Buffer
+        const leadTrack = tracks.find(t => t.type === 'vocal');
+        if (leadTrack && state.renderedVocalBuffer) {
+          const chain = buildChannelDspChain(ctx, leadTrack, masterGainNode, leadTrack.id);
+          const src = ctx.createBufferSource();
+          src.buffer = state.renderedVocalBuffer;
+          src.loop = state.loopEnabled;
+          src.start(ctx.currentTime + 0.02, startOffsetSec % state.renderedVocalBuffer.duration);
+          src.connect(chain);
+          state.activeNodes.push(src);
+        }
+
+        // 3. Harmony Stack Buffer
+        const harmTrack = tracks.find(t => t.type === 'harmony');
+        if (harmTrack && state.renderedHarmonyBuffer) {
+          const chain = buildChannelDspChain(ctx, harmTrack, masterGainNode, harmTrack.id);
+          const src = ctx.createBufferSource();
+          src.buffer = state.renderedHarmonyBuffer;
+          src.loop = state.loopEnabled;
+          src.start(ctx.currentTime + 0.02, startOffsetSec % state.renderedHarmonyBuffer.duration);
+          src.connect(chain);
+          state.activeNodes.push(src);
+        }
+
+        // 4. Piano Roll Synth Track
+        const synthTrack = tracks.find(t => t.type === 'synth');
+        if (synthTrack && state.currentProject.melodyNotes.length) {
+          const chain = buildChannelDspChain(ctx, synthTrack, masterGainNode, synthTrack.id);
+          state.currentProject.melodyNotes.forEach(note => {
+            if (note.start + note.duration < state.playheadBeat) return;
+            const nStart = ctx.currentTime + 0.02 + Math.max(0, (note.start - state.playheadBeat) * beatSec);
+            const nDur = note.duration * beatSec;
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = midiToFreq(note.pitch);
+            g.gain.setValueAtTime(0.001, nStart);
+            g.gain.linearRampToValueAtTime(0.18 * (note.velocity || 0.8), nStart + 0.03);
+            g.gain.exponentialRampToValueAtTime(0.001, nStart + nDur);
+            osc.connect(g);
+            g.connect(chain);
+            osc.start(nStart);
+            osc.stop(nStart + nDur + 0.02);
+            state.activeNodes.push(osc);
+          });
+        }
+      }
+
+      let lastMetronomeBeat = -1;
+      function playMetronomeClick(isDownbeat) {
+        const ctx = ensureAudioContext();
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.frequency.value = isDownbeat ? 1100 : 760;
+        g.gain.setValueAtTime(0.12, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+        osc.connect(g);
+        g.connect(masterGainNode);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.06);
+      }
+
+      function animationLoop(now) {
+        if (state.isPlaying) {
+          const dtSec = (now - state.lastFrameTime) / 1000;
+          state.lastFrameTime = now;
+          const bpm = state.currentProject.bpm || 96;
+          state.playheadBeat += dtSec * (bpm / 60);
+
+          const maxBeats = 32; // 8 bars of 4/4
+          if (state.playheadBeat >= maxBeats) {
+            if (state.loopEnabled) {
+              state.playheadBeat = 0;
+              startMasterPlayback();
+            } else {
+              state.playheadBeat = 0;
+              stopAllAudioPlayback();
+            }
+          }
+
+          if (state.metronomeEnabled) {
+            const wholeBeat = Math.floor(state.playheadBeat);
+            if (wholeBeat !== lastMetronomeBeat) {
+              lastMetronomeBeat = wholeBeat;
+              playMetronomeClick(wholeBeat % 4 === 0);
+            }
+          }
+          drawMultitrackTimeline();
+          drawPianoRoll();
+        }
+
+        // Update Timecode Display
+        const bar = Math.floor(state.playheadBeat / 4) + 1;
+        const beat = Math.floor(state.playheadBeat % 4) + 1;
+        const secTotal = state.playheadBeat * (60 / (state.currentProject.bpm || 96));
+        const mins = String(Math.floor(secTotal / 60)).padStart(2, '0');
+        const secs = (secTotal % 60).toFixed(1).padStart(4, '0');
+        document.getElementById('globalTimecode').textContent = `${String(bar).padStart(3, '0')}:${beat} | ${mins}:${secs}`;
+
+        updateLiveLevelMeters();
+        requestAnimationFrame(animationLoop);
+      }
+
+      /* ======================================================================
+         MODULE 6: UI RENDERERS FOR ALL 11 STUDIO VIEWS
+         ====================================================================== */
+      function renderDashboard() {
+        // Genre Blueprint Buttons
+        const tplWrap = document.getElementById('genreTemplateButtons');
+        tplWrap.innerHTML = '';
+        GENRE_TEMPLATES.forEach(tpl => {
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-sm';
+          btn.innerHTML = `<span style="width:10px;height:10px;border-radius:50%;background:${tpl.color};display:inline-block;"></span> ${tpl.name} (${tpl.bpm} BPM)`;
+          btn.onclick = async () => {
+            const p = createDemoProject();
+            p.id = 'proj_' + Date.now();
+            p.title = tpl.name;
+            p.genre = tpl.genre;
+            p.bpm = tpl.bpm;
+            p.key = tpl.key;
+            p.scale = tpl.scale;
+            p.folder = 'Originals';
+            p.favourite = false;
+            p.coverGradient = tpl.color;
+            p.vocalSettings = { ...VOCAL_PRESETS[tpl.vocal], presetId: tpl.vocal };
+            state.currentProject = p;
+            state.projects.unshift(p);
+            await saveProjectToDB(p);
+            await generateProceduralInstrumental(tpl.genre === 'R&B' ? 'lofi' : 'dreamy');
+            await renderVocalsToBuffers(true);
+            refreshEntireUI();
+            showToast(`Created "${tpl.name}" project!`);
+          };
+          tplWrap.appendChild(btn);
+        });
+
+        // Filter & Sort Projects
+        const query = document.getElementById('projectSearchInput').value.toLowerCase();
+        const folder = document.getElementById('projectFolderFilter').value;
+        const sort = document.getElementById('projectSortSelect').value;
+
+        let list = [...state.projects];
+        if (query) {
+          list = list.filter(p => p.title.toLowerCase().includes(query) || p.genre.toLowerCase().includes(query) || (p.folder || '').toLowerCase().includes(query));
+        }
+        if (folder === 'Favourites') list = list.filter(p => p.favourite);
+        else if (folder !== 'all') list = list.filter(p => p.folder === folder);
+
+        list.sort((a, b) => {
+          if (sort === 'name') return a.title.localeCompare(b.title);
+          if (sort === 'created') return (b.createdAt || '').localeCompare(a.createdAt || '');
+          return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+        });
+
+        const grid = document.getElementById('projectLibraryGrid');
+        grid.innerHTML = '';
+        list.forEach(proj => {
+          const isCurrent = proj.id === state.currentProject.id;
+          const card = document.createElement('div');
+          card.className = 'project-card';
+          card.innerHTML = `
+            <div class="project-cover" style="background:${proj.coverGradient || 'linear-gradient(135deg,#D98B9E,#6B4E71)'};">
+              <div>
+                <span style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; background:rgba(0,0,0,0.24); padding:3px 8px; border-radius:99px;">${proj.genre} · ${proj.bpm} BPM</span>
+                <div style="font-family:var(--font-serif); font-size:20px; font-weight:600; margin-top:4px;">${proj.title}</div>
+              </div>
+              <button class="t-btn" data-act="fav" title="Toggle Favourite" style="background:rgba(255,255,255,0.88);">${proj.favourite ? '★' : '☆'}</button>
+            </div>
+            <div class="project-body">
+              <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                Key: <strong>${proj.key} ${proj.scale.replace('_', ' ')}</strong> · Folder: <strong>${proj.folder || 'Originals'}</strong><br/>
+                Modified: ${new Date(proj.updatedAt).toLocaleDateString()}
+              </div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button class="btn btn-sm ${isCurrent ? 'btn-primary' : 'btn-soft'}" data-act="open">${isCurrent ? '● Active Studio' : 'Open Project'}</button>
+                <button class="btn btn-sm" data-act="dup">Duplicate</button>
+                <button class="btn btn-sm btn-danger" data-act="del">Delete</button>
+              </div>
+            </div>
+          `;
+          card.querySelector('[data-act="open"]').onclick = async () => {
+            state.currentProject = JSON.parse(JSON.stringify(proj));
+            await generateProceduralInstrumental('dreamy');
+            await renderVocalsToBuffers(true);
+            refreshEntireUI();
+            showToast(`Loaded "${proj.title}"`);
+          };
+          card.querySelector('[data-act="fav"]').onclick = async () => {
+            proj.favourite = !proj.favourite;
+            await saveProjectToDB(proj);
+            renderDashboard();
+          };
+          card.querySelector('[data-act="dup"]').onclick = async () => {
+            const copy = JSON.parse(JSON.stringify(proj));
+            copy.id = 'proj_' + Date.now();
+            copy.title = proj.title + ' (Copy)';
+            state.projects.unshift(copy);
+            await saveProjectToDB(copy);
+            renderDashboard();
+            showToast('Project duplicated.');
+          };
+          card.querySelector('[data-act="del"]').onclick = async () => {
+            if (state.projects.length <= 1) return showToast('Keep at least one project in your library.');
+            state.projects = state.projects.filter(x => x.id !== proj.id);
+            await deleteProjectFromDB(proj.id);
+            renderDashboard();
+            showToast('Project removed.');
+          };
+          grid.appendChild(card);
+        });
+      }
+
+      function renderSongwritingRoom() {
+        const container = document.getElementById('lyricSectionsContainer');
+        const map = document.getElementById('songStructureMap');
+        container.innerHTML = '';
+        map.innerHTML = '';
+
+        let totalWords = 0, totalSyllables = 0, totalLines = 0;
+
+        state.currentProject.sections.forEach((sec, idx) => {
+          const color = SECTION_COLORS[sec.type] || '#D98B9E';
+          const lines = sec.lyrics.split('\n').filter(l => l.trim().length > 0);
+          const words = sec.lyrics.trim() ? sec.lyrics.trim().split(/\s+/) : [];
+          const sylCount = words.reduce((acc, w) => acc + countSyllables(w), 0);
+
+          totalWords += words.length;
+          totalSyllables += sylCount;
+          totalLines += lines.length;
+
+          // Structure Map Pill
+          const pill = document.createElement('div');
+          pill.style.cssText = `background:${color}; color:#FFF; padding:6px 12px; border-radius:99px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:6px;`;
+          pill.innerHTML = `<span>${sec.name}</span> <span style="opacity:0.82; font-family:var(--font-mono); font-size:11px;">(${sylCount} syl)</span>`;
+          map.appendChild(pill);
+
+          // Section Card
+          const card = document.createElement('div');
+          card.className = 'lyric-section-card';
+          card.style.borderLeftColor = color;
+          card.innerHTML = `
+            <div class="lyric-section-head">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="text" value="${sec.name}" data-field="name" style="font-weight:700; font-size:13.5px; color:var(--accent-plum-dark); background:transparent; border:1px solid transparent; border-radius:6px; padding:2px 6px; width:130px;" />
+                <select data-field="delivery" class="select-field" style="width:125px; padding:3px 8px; font-size:11.5px;">
+                  ${['whispered', 'energetic', 'breathy', 'soft', 'spoken', 'layered', 'sustained'].map(d => `<option value="${d}" ${sec.delivery === d ? 'selected' : ''}>${d}</option>`).join('')}
+                </select>
+                <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">${words.length}w · ${sylCount} syl</span>
+              </div>
+              <div style="display:flex; gap:5px;">
+                <button class="btn btn-sm" data-act="up" title="Move Up">↑</button>
+                <button class="btn btn-sm" data-act="down" title="Move Down">↓</button>
+                <button class="btn btn-sm" data-act="dup" title="Duplicate Section">⧉</button>
+                <button class="btn btn-sm btn-danger" data-act="del" title="Remove Section">✕</button>
+              </div>
+            </div>
+            <textarea class="lyric-textarea" placeholder="Write your lyrics here...">${sec.lyrics}</textarea>
+            <div style="padding:7px 14px; background:var(--surface-subtle); border-top:1px solid var(--border-delicate); display:flex; align-items:center; gap:8px;">
+              <span style="font-size:11px; font-weight:600; color:var(--text-muted);">Pronunciation / Vocal Note:</span>
+              <input type="text" data-field="notes" value="${sec.notes || ''}" placeholder="Add breath marks, stress cues, or phonetic tips..." style="flex:1; font-size:12px; background:transparent; border:none; color:var(--text-charcoal);" />
+            </div>
+          `;
+
+          card.querySelector('textarea').oninput = (e) => {
+            sec.lyrics = e.target.value;
+            updateLyricSummaryStats();
+          };
+          card.querySelector('[data-field="name"]').onchange = (e) => { sec.name = e.target.value; renderSongwritingRoom(); };
+          card.querySelector('[data-field="delivery"]').onchange = (e) => { sec.delivery = e.target.value; };
+          card.querySelector('[data-field="notes"]').onchange = (e) => { sec.notes = e.target.value; };
+          card.querySelector('[data-act="up"]').onclick = () => {
+            if (idx > 0) {
+              pushUndoSnapshot();
+              [state.currentProject.sections[idx - 1], state.currentProject.sections[idx]] = [state.currentProject.sections[idx], state.currentProject.sections[idx - 1]];
+              renderSongwritingRoom();
+            }
+          };
+          card.querySelector('[data-act="down"]').onclick = () => {
+            if (idx < state.currentProject.sections.length - 1) {
+              pushUndoSnapshot();
+              [state.currentProject.sections[idx + 1], state.currentProject.sections[idx]] = [state.currentProject.sections[idx], state.currentProject.sections[idx + 1]];
+              renderSongwritingRoom();
+            }
+          };
+          card.querySelector('[data-act="dup"]').onclick = () => {
+            pushUndoSnapshot();
+            const clone = JSON.parse(JSON.stringify(sec));
+            clone.id = 'sec_' + Date.now();
+            clone.name = sec.name + ' (2)';
+            state.currentProject.sections.splice(idx + 1, 0, clone);
+            renderSongwritingRoom();
+          };
+          card.querySelector('[data-act="del"]').onclick = () => {
+            if (state.currentProject.sections.length <= 1) return showToast('At least one song section is required.');
+            pushUndoSnapshot();
+            state.currentProject.sections.splice(idx, 1);
+            renderSongwritingRoom();
+          };
+
+          container.appendChild(card);
+        });
+
+        updateLyricSummaryStats();
+      }
+
+      function updateLyricSummaryStats() {
+        let w = 0, s = 0, l = 0;
+        state.currentProject.sections.forEach(sec => {
+          l += sec.lyrics.split('\n').filter(x => x.trim()).length;
+          const words = sec.lyrics.trim() ? sec.lyrics.trim().split(/\s+/) : [];
+          w += words.length;
+          s += words.reduce((acc, word) => acc + countSyllables(word), 0);
+        });
+        const estSec = Math.round(s * (60 / (state.currentProject.bpm || 96)) * 0.75);
+        const mins = Math.floor(estSec / 60);
+        const secs = String(estSec % 60).padStart(2, '0');
+        document.getElementById('lyricGlobalStats').textContent = `${w} words · ${s} syllables · ${l} lines · ~${mins}:${secs} vocal est.`;
+      }
+
+      function runRhymeLookup() {
+        const q = document.getElementById('rhymeSearchInput').value.trim().toLowerCase();
+        const box = document.getElementById('rhymeResultsBox');
+        box.innerHTML = '';
+        let matches = RHYME_BANK[q];
+        if (!matches) {
+          const suffix = q.slice(-2);
+          const allWords = Object.values(RHYME_BANK).flat();
+          matches = allWords.filter(w => w !== q && w.endsWith(suffix));
+        }
+        if (!matches || !matches.length) {
+          matches = ['light', 'dream', 'glow', 'sky', 'heart', 'echo'];
+        }
+        matches.forEach(word => {
+          const tag = document.createElement('span');
+          tag.style.cssText = 'background:var(--bg-blush); color:var(--accent-plum-dark); padding:4px 10px; border-radius:99px; font-size:12px; font-weight:600;';
+          tag.textContent = `${word} (${countSyllables(word)})`;
+          box.appendChild(tag);
+        });
+      }
+
+      function updateSyllableProbe() {
+        const line = document.getElementById('syllableProbeInput').value;
+        const words = line.trim() ? line.trim().split(/\s+/) : [];
+        const breakdown = words.map(w => `${w} [${splitWordIntoSyllables(w).join('·')}]`).join('  ');
+        const total = words.reduce((a, w) => a + countSyllables(w), 0);
+        document.getElementById('syllableProbeOutput').textContent = `Total: ${total} syllables\n${breakdown}`;
+      }
+
+      // Waveform Canvas Renderer
+      function drawWaveformCanvas() {
+        const canvas = document.getElementById('waveformCanvas');
+        if (!canvas) return;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = Math.max(600, rect.width || 800);
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+
+        ctx.fillStyle = '#231E26';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 50) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+
+        const buf = state.instrumentalBuffer;
+        document.getElementById('instrumentalMetaInfo').textContent = buf
+          ? `Active Track: ${state.currentProject.instrumentalTrim.name} · ${buf.duration.toFixed(1)}s · ${buf.sampleRate} Hz`
+          : 'No instrumental loaded';
+
+        if (!buf) return;
+        const data = buf.getChannelData(0);
+        const zoom = parseFloat(document.getElementById('waveformZoom').value || 1);
+        const visibleSamples = Math.floor(data.length / zoom);
+        const step = Math.max(1, Math.floor(visibleSamples / W));
+
+        const grad = ctx.createLinearGradient(0, 0, W, 0);
+        grad.addColorStop(0, '#D98B9E');
+        grad.addColorStop(0.5, '#E5D9F2');
+        grad.addColorStop(1, '#FCEADE');
+        ctx.fillStyle = grad;
+
+        for (let x = 0; x < W; x++) {
+          let min = 1, max = -1;
+          const startIdx = x * step;
+          for (let j = 0; j < step && startIdx + j < data.length; j += 4) {
+            const v = data[startIdx + j];
+            if (v < min) min = v;
+            if (v > max) max = v;
+          }
+          const y1 = (1 + min) * 0.5 * H;
+          const y2 = (1 + max) * 0.5 * H;
+          ctx.fillRect(x, y1, 1.5, Math.max(2, y2 - y1));
+        }
+
+        // Trim markers
+        const trim = state.currentProject.instrumentalTrim;
+        const visDur = buf.duration / zoom;
+        const xStart = (trim.start / visDur) * W;
+        const xEnd = Math.min(W, (trim.end / visDur) * W);
+        ctx.fillStyle = 'rgba(217, 139, 158, 0.14)';
+        ctx.fillRect(xStart, 0, Math.max(0, xEnd - xStart), H);
+        ctx.strokeStyle = '#FCEADE';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(xStart, 0); ctx.lineTo(xStart, H); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(xEnd, 0); ctx.lineTo(xEnd, H); ctx.stroke();
+      }
+
+      // Interactive Piano Roll Renderer & Mouse Editor
+      const PIANO_MIN_MIDI = 48; // C3
+      const PIANO_MAX_MIDI = 83; // B5
+      const KEY_W = 54;
+      let selectedNoteId = null;
+      let draggingNote = null;
+
+      function isPitchInCurrentScale(midi) {
+        const root = NOTE_NAMES.indexOf(state.currentProject.key || 'A');
+        const scaleIntervals = SCALES[state.currentProject.scale || 'natural_minor'] || SCALES.natural_minor;
+        const rel = (midi - root + 120) % 12;
+        return scaleIntervals.includes(rel);
+      }
+
+      function drawPianoRoll() {
+        const canvas = document.getElementById('pianoRollCanvas');
+        if (!canvas) return;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = Math.max(640, rect.width || 860);
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const totalRows = PIANO_MAX_MIDI - PIANO_MIN_MIDI + 1;
+        const rowH = H / totalRows;
+        const bars = parseInt(document.getElementById('pianoBarsCount').value || 8, 10);
+        const totalBeats = bars * 4;
+        const beatW = (W - KEY_W) / totalBeats;
+
+        ctx.fillStyle = '#231E26';
+        ctx.fillRect(0, 0, W, H);
+
+        // Pitch rows & scale highlighting
+        for (let m = PIANO_MAX_MIDI; m >= PIANO_MIN_MIDI; m--) {
+          const rowIdx = PIANO_MAX_MIDI - m;
+          const y = rowIdx * rowH;
+          const inScale = isPitchInCurrentScale(m);
+          const isBlack = [1, 3, 6, 8, 10].includes(m % 12);
+
+          ctx.fillStyle = inScale ? 'rgba(229, 217, 242, 0.08)' : (isBlack ? 'rgba(0,0,0,0.28)' : 'rgba(255,255,255,0.02)');
+          ctx.fillRect(KEY_W, y, W - KEY_W, rowH - 0.5);
+
+          // Left Piano Key
+          ctx.fillStyle = isBlack ? '#2B262D' : '#FDFBF9';
+          ctx.fillRect(0, y, KEY_W - 2, rowH - 0.5);
+          if (m % 12 === 0 || inScale) {
+            ctx.fillStyle = isBlack ? '#F8E8EE' : '#4B3550';
+            ctx.font = '600 9.5px JetBrains Mono, monospace';
+            ctx.fillText(midiToNoteName(m), 6, y + rowH * 0.78);
+          }
+        }
+
+        // Beat & Bar vertical grid
+        for (let b = 0; b <= totalBeats; b++) {
+          const x = KEY_W + b * beatW;
+          ctx.strokeStyle = b % 4 === 0 ? 'rgba(248, 232, 238, 0.28)' : 'rgba(255,255,255,0.07)';
+          ctx.lineWidth = b % 4 === 0 ? 1.4 : 1;
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+
+        // Melody Notes
+        state.currentProject.melodyNotes.forEach(note => {
+          if (note.pitch < PIANO_MIN_MIDI || note.pitch > PIANO_MAX_MIDI) return;
+          const rowIdx = PIANO_MAX_MIDI - note.pitch;
+          const x = KEY_W + note.start * beatW;
+          const y = rowIdx * rowH + 1;
+          const w = Math.max(8, note.duration * beatW - 2);
+          const h = Math.max(6, rowH - 2);
+
+          ctx.fillStyle = note.id === selectedNoteId ? '#FCEADE' : '#D98B9E';
+          ctx.beginPath();
+          ctx.roundRect(x, y, w, h, 4);
+          ctx.fill();
+          ctx.strokeStyle = '#FDFBF9';
+          ctx.lineWidth = note.id === selectedNoteId ? 1.6 : 0.7;
+          ctx.stroke();
+
+          ctx.fillStyle = '#2B262D';
+          ctx.font = '600 9px Plus Jakarta Sans, sans-serif';
+          ctx.fillText(midiToNoteName(note.pitch), x + 4, y + h * 0.75);
+        });
+
+        // Playhead line
+        const px = KEY_W + state.playheadBeat * beatW;
+        if (px >= KEY_W && px <= W) {
+          ctx.strokeStyle = '#FCEADE';
+          ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+        }
+      }
+
+      function initPianoRollInteraction() {
+        const canvas = document.getElementById('pianoRollCanvas');
+        canvas.addEventListener('mousedown', (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+          const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+          const totalRows = PIANO_MAX_MIDI - PIANO_MIN_MIDI + 1;
+          const rowH = canvas.height / totalRows;
+          const bars = parseInt(document.getElementById('pianoBarsCount').value || 8, 10);
+          const beatW = (canvas.width - KEY_W) / (bars * 4);
+          const snap = parseFloat(document.getElementById('pianoGridSnap').value || 0.5);
+
+          const clickedPitch = PIANO_MAX_MIDI - Math.floor(y / rowH);
+          auditionSingleMidiNote(clickedPitch);
+          if (x < KEY_W) return;
+
+          const clickBeat = (x - KEY_W) / beatW;
+          const existing = state.currentProject.melodyNotes.find(n =>
+            n.pitch === clickedPitch && clickBeat >= n.start && clickBeat <= n.start + n.duration
+          );
+
+          if (e.button === 2 && existing) {
+            pushUndoSnapshot();
+            state.currentProject.melodyNotes = state.currentProject.melodyNotes.filter(n => n.id !== existing.id);
+            drawPianoRoll();
+            return;
+          }
+
+          if (existing) {
+            selectedNoteId = existing.id;
+            draggingNote = { note: existing, offsetBeat: clickBeat - existing.start };
+          } else {
+            let pitch = clickedPitch;
+            if (document.getElementById('pianoScaleLock').checked && !isPitchInCurrentScale(pitch)) {
+              if (isPitchInCurrentScale(pitch + 1)) pitch += 1;
+              else if (isPitchInCurrentScale(pitch - 1)) pitch -= 1;
+            }
+            pushUndoSnapshot();
+            const snappedStart = Math.floor(clickBeat / snap) * snap;
+            const newNote = { id: 'note_' + Date.now(), pitch, start: snappedStart, duration: Math.max(0.5, snap), velocity: 0.85 };
+            state.currentProject.melodyNotes.push(newNote);
+            selectedNoteId = newNote.id;
+            draggingNote = { note: newNote, offsetBeat: 0 };
+          }
+          drawPianoRoll();
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+          if (!draggingNote) return;
+          const rect = canvas.getBoundingClientRect();
+          const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+          const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+          const totalRows = PIANO_MAX_MIDI - PIANO_MIN_MIDI + 1;
+          const rowH = canvas.height / totalRows;
+          const bars = parseInt(document.getElementById('pianoBarsCount').value || 8, 10);
+          const beatW = (canvas.width - KEY_W) / (bars * 4);
+          const snap = parseFloat(document.getElementById('pianoGridSnap').value || 0.5);
+
+          let newPitch = Math.max(PIANO_MIN_MIDI, Math.min(PIANO_MAX_MIDI, PIANO_MAX_MIDI - Math.floor(y / rowH)));
+          if (document.getElementById('pianoScaleLock').checked && !isPitchInCurrentScale(newPitch)) {
+            if (isPitchInCurrentScale(newPitch + 1)) newPitch += 1;
+          }
+          const rawBeat = Math.max(0, (x - KEY_W) / beatW - draggingNote.offsetBeat);
+          draggingNote.note.pitch = newPitch;
+          draggingNote.note.start = Math.round(rawBeat / snap) * snap;
+          drawPianoRoll();
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (draggingNote) {
+            draggingNote = null;
+            syncSyllablesFromLyricsAndMelody(true);
+          }
+        });
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+      }
+
+      function auditionSingleMidiNote(midi) {
+        const ctx = ensureAudioContext();
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = midiToFreq(midi);
+        g.gain.setValueAtTime(0.16, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.connect(g);
+        g.connect(masterGainNode);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.26);
+      }
+
+      function generateDeterministicMelody() {
+        pushUndoSnapshot();
+        const mood = document.getElementById('melodyGenMood').value;
+        const density = parseFloat(document.getElementById('melodyGenDensity').value || 0.7);
+        const root = 60 + NOTE_NAMES.indexOf(state.currentProject.key || 'A');
+        const intervals = SCALES[state.currentProject.scale || 'natural_minor'];
+        const scaleNotes = [];
+        for (let oct = 0; oct < 2; oct++) {
+          intervals.forEach(iv => scaleNotes.push(root + iv + oct * 12));
+        }
+
+        const notes = [];
+        let cursor = 0;
+        let idx = mood === 'uplifting' ? 4 : (mood === 'melancholic' ? 2 : 3);
+        let stepSeed = 1;
+
+        while (cursor < 16) {
+          const dur = density > 0.75 ? 0.5 : 1.0;
+          const stepMove = ((stepSeed * 7 + (mood === 'energetic' ? 3 : 1)) % 5) - 2;
+          idx = Math.max(0, Math.min(scaleNotes.length - 1, idx + stepMove));
+          notes.push({
+            id: 'gen_' + cursor + '_' + stepSeed,
+            pitch: scaleNotes[idx],
+            start: cursor,
+            duration: dur,
+            velocity: 0.84
+          });
+          cursor += dur;
+          stepSeed++;
+        }
+        state.currentProject.melodyNotes = notes;
+        syncSyllablesFromLyricsAndMelody(true);
+        drawPianoRoll();
+        showToast(`Generated ${mood} melody (${notes.length} notes).`);
+      }
+
+      // Virtual Singer & Phoneme Mapping UI
+      function syncSyllablesFromLyricsAndMelody(silent = false) {
+        const allWords = state.currentProject.sections.map(s => s.lyrics).join(' ').trim().split(/\s+/).filter(Boolean);
+        const syllables = [];
+        allWords.forEach(w => {
+          splitWordIntoSyllables(w).forEach(part => syllables.push(part));
+        });
+
+        const notes = [...state.currentProject.melodyNotes].sort((a, b) => a.start - b.start);
+        const count = Math.max(notes.length, Math.min(syllables.length, 32));
+        const mapped = [];
+
+        for (let i = 0; i < count; i++) {
+          const sylText = syllables[i % Math.max(1, syllables.length)] || 'la';
+          const note = notes[i] || {
+            pitch: 69 + (i % 5),
+            start: i * 1.0,
+            duration: 1.0
+          };
+          mapped.push({
+            text: sylText,
+            vowel: detectPrimaryVowel(sylText),
+            pitch: note.pitch,
+            start: note.start,
+            duration: note.duration
+          });
+        }
+        state.currentProject.syllableMap = mapped;
+        renderVirtualSingerLab();
+        if (!silent) showToast(`Mapped ${mapped.length} lyric syllables onto melody notes.`);
+      }
+
+      function renderVirtualSingerLab() {
+        const vs = state.currentProject.vocalSettings;
+        document.getElementById('vocalPresetSelect').value = vs.presetId || 'soft_pop';
+
+        const sliderDefs = [
+          { key: 'octave', label: 'Octave Shift', min: -1, max: 1, step: 1 },
+          { key: 'formantShift', label: 'Formant Position', min: 0.75, max: 1.35, step: 0.02 },
+          { key: 'brightness', label: 'Brightness (Hz)', min: 1200, max: 5000, step: 100 },
+          { key: 'breathiness', label: 'Breathiness', min: 0, max: 0.6, step: 0.02 },
+          { key: 'vibratoDepth', label: 'Vibrato Depth', min: 0, max: 40, step: 1 },
+          { key: 'vibratoSpeed', label: 'Vibrato Speed (Hz)', min: 0, max: 9, step: 0.2 },
+          { key: 'attack', label: 'Attack (s)', min: 0.01, max: 0.25, step: 0.01 },
+          { key: 'release', label: 'Release (s)', min: 0.05, max: 0.5, step: 0.02 },
+          { key: 'portamento', label: 'Glide / Portamento', min: 0, max: 0.15, step: 0.01 },
+          { key: 'intensity', label: 'Vocal Intensity', min: 0.3, max: 1.0, step: 0.05 }
+        ];
+
+        const slidersWrap = document.getElementById('vocalSlidersContainer');
+        slidersWrap.innerHTML = '';
+        sliderDefs.forEach(def => {
+          const val = vs[def.key] ?? 0;
+          const row = document.createElement('div');
+          row.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+              <span>${def.label}</span>
+              <strong style="font-family:var(--font-mono); color:var(--accent-plum-dark);">${val}</strong>
+            </div>
+            <input type="range" min="${def.min}" max="${def.max}" step="${def.step}" value="${val}" style="width:100%;" />
+          `;
+          row.querySelector('input').oninput = (e) => {
+            vs[def.key] = parseFloat(e.target.value);
+            row.querySelector('strong').textContent = vs[def.key];
+          };
+          slidersWrap.appendChild(row);
+        });
+
+        // Syllable Chips
+        const grid = document.getElementById('syllableMappingGrid');
+        grid.innerHTML = '';
+        state.currentProject.syllableMap.forEach((syl, idx) => {
+          const chip = document.createElement('div');
+          chip.className = 'syllable-chip';
+          chip.innerHTML = `
+            <div style="display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted);">
+              <span>#${idx + 1}</span>
+              <strong style="font-family:var(--font-mono);">${midiToNoteName(syl.pitch)}</strong>
+            </div>
+            <input type="text" value="${syl.text}" aria-label="Syllable text" />
+            <select style="font-size:11px; border-radius:5px; border:1px solid var(--border-delicate); padding:2px;">
+              ${['A', 'E', 'I', 'O', 'U'].map(v => `<option value="${v}" ${syl.vowel === v ? 'selected' : ''}>Vowel: ${v}</option>`).join('')}
+            </select>
+          `;
+          chip.querySelector('input').onchange = (e) => { syl.text = e.target.value; };
+          chip.querySelector('select').onchange = (e) => { syl.vowel = e.target.value; };
+          grid.appendChild(chip);
+        });
+      }
+
+      // Harmony Studio Renderer
+      function renderHarmonyStudio() {
+        const wrap = document.getElementById('harmonyLayersContainer');
+        wrap.innerHTML = '';
+        state.currentProject.harmonyLayers.forEach((layer, idx) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="card-title">
+              <input type="text" value="${layer.name}" style="font-family:var(--font-serif); font-size:17px; font-weight:600; border:none; background:transparent; color:var(--accent-plum-dark);" />
+              <div style="display:flex; gap:6px; align-items:center;">
+                <label style="font-size:12px;"><input type="checkbox" ${layer.enabled ? 'checked' : ''} /> Active</label>
+                <button class="btn btn-sm btn-danger">✕</button>
+              </div>
+            </div>
+            <div class="grid-2" style="font-size:12px; gap:10px;">
+              <label>Pitch Offset (Semitones): <strong>${layer.semitones > 0 ? '+' + layer.semitones : layer.semitones}</strong>
+                <input type="range" min="-12" max="12" step="1" value="${layer.semitones}" data-k="semitones" style="width:100%;" />
+              </label>
+              <label>Stereo Pan: <strong>${layer.pan}</strong>
+                <input type="range" min="-1" max="1" step="0.05" value="${layer.pan}" data-k="pan" style="width:100%;" />
+              </label>
+              <label>Layer Volume: <strong>${Math.round(layer.volume * 100)}%</strong>
+                <input type="range" min="0" max="1" step="0.05" value="${layer.volume}" data-k="volume" style="width:100%;" />
+              </label>
+              <label>Micro-Timing Offset (ms): <strong>${layer.delayMs} ms</strong>
+                <input type="range" min="0" max="60" step="2" value="${layer.delayMs}" data-k="delayMs" style="width:100%;" />
+              </label>
+            </div>
+            <div style="margin-top:10px; display:flex; align-items:center; gap:8px; font-size:12px;">
+              <span>Vocal Timbre:</span>
+              <select class="select-field" style="width:170px; padding:4px 8px;">
+                ${Object.entries(VOCAL_PRESETS).map(([k, v]) => `<option value="${k}" ${layer.presetId === k ? 'selected' : ''}>${v.name}</option>`).join('')}
+              </select>
+            </div>
+          `;
+          card.querySelector('input[type="text"]').onchange = (e) => { layer.name = e.target.value; };
+          card.querySelector('input[type="checkbox"]').onchange = (e) => { layer.enabled = e.target.checked; renderVocalsToBuffers(true); };
+          card.querySelector('.btn-danger').onclick = () => {
+            state.currentProject.harmonyLayers.splice(idx, 1);
+            renderHarmonyStudio();
+            renderVocalsToBuffers(true);
+          };
+          card.querySelectorAll('input[type="range"]').forEach(rng => {
+            rng.oninput = (e) => {
+              layer[e.target.dataset.k] = parseFloat(e.target.value);
+              renderHarmonyStudio();
+            };
+          });
+          card.querySelector('select').onchange = (e) => { layer.presetId = e.target.value; };
+          wrap.appendChild(card);
+        });
+      }
+
+      // Multitrack Timeline Renderer
+      function drawMultitrackTimeline() {
+        const host = document.getElementById('multitrackHeaderList');
+        if (!host) return;
+        const zoomPxPerBar = parseInt(document.getElementById('multitrackZoom').value || 64, 10);
+        const tracks = state.currentProject.tracks;
+
+        host.innerHTML = '';
+        const leftCol = document.createElement('div');
+        leftCol.style.cssText = 'display:flex; flex-direction:column; gap:8px; padding-top:26px;';
+
+        tracks.forEach((t, idx) => {
+          const laneHead = document.createElement('div');
+          laneHead.style.cssText = `height:64px; background:var(--surface-card); border:1px solid var(--border-delicate); border-left:5px solid ${t.color}; border-radius:10px; padding:7px 10px; display:flex; flex-direction:column; justify-content:space-between;`;
+          laneHead.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size:12px; color:var(--text-charcoal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:125px;">${t.name}</strong>
+              <div style="display:flex; gap:3px;">
+                <button class="btn btn-sm" data-act="m" style="padding:1px 6px; ${t.mute ? 'background:#B83256;color:#FFF;' : ''}">M</button>
+                <button class="btn btn-sm" data-act="s" style="padding:1px 6px; ${t.solo ? 'background:#6B4E71;color:#FFF;' : ''}">S</button>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <input type="range" min="0" max="1" step="0.02" value="${t.volume}" style="flex:1;" />
+              <span style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted);">${Math.round(t.volume * 100)}%</span>
+            </div>
+          `;
+          laneHead.querySelector('[data-act="m"]').onclick = () => { t.mute = !t.mute; drawMultitrackTimeline(); renderMixingConsole(); };
+          laneHead.querySelector('[data-act="s"]').onclick = () => { t.solo = !t.solo; drawMultitrackTimeline(); renderMixingConsole(); };
+          laneHead.querySelector('input[type="range"]').oninput = (e) => { t.volume = parseFloat(e.target.value); drawMultitrackTimeline(); renderMixingConsole(); };
+          leftCol.appendChild(laneHead);
+        });
+
+        const rightCol = document.createElement('div');
+        rightCol.style.overflowX = 'auto';
+        const canvas = document.createElement('canvas');
+        const totalBars = 12;
+        canvas.width = Math.max(680, totalBars * zoomPxPerBar);
+        canvas.height = 26 + tracks.length * 72;
+        rightCol.appendChild(canvas);
+
+        host.appendChild(leftCol);
+        host.appendChild(rightCol);
+
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#231E26';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Bar Ruler
+        ctx.fillStyle = '#2E2733';
+        ctx.fillRect(0, 0, canvas.width, 24);
+        for (let b = 0; b < totalBars; b++) {
+          const x = b * zoomPxPerBar;
+          ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+          ctx.fillStyle = '#F8E8EE';
+          ctx.font = '600 10.5px JetBrains Mono, monospace';
+          ctx.fillText(`BAR ${b + 1}`, x + 6, 15);
+        }
+
+        // Track Clips
+        tracks.forEach((t, idx) => {
+          const y = 28 + idx * 72;
+          const clipX = (t.clipStart || 0) * zoomPxPerBar;
+          const clipW = (t.clipBars || 8) * zoomPxPerBar;
+
+          ctx.fillStyle = t.color;
+          ctx.globalAlpha = t.mute ? 0.32 : 0.86;
+          ctx.beginPath();
+          ctx.roundRect(clipX + 2, y, clipW - 4, 60, 10);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          // Mini decorative waveform or MIDI bars inside clip
+          ctx.fillStyle = 'rgba(255,255,255,0.75)';
+          if (t.type === 'synth') {
+            state.currentProject.melodyNotes.forEach(n => {
+              const nx = clipX + (n.start / 4) * zoomPxPerBar;
+              const ny = y + 48 - ((n.pitch - 55) * 1.4);
+              ctx.fillRect(nx, Math.max(y + 6, Math.min(y + 52, ny)), Math.max(4, (n.duration / 4) * zoomPxPerBar - 2), 4);
+            });
+          } else {
+            for (let wx = 8; wx < clipW - 12; wx += 4) {
+              const amp = 8 + Math.abs(Math.sin((wx + idx * 17) * 0.14)) * 22;
+              ctx.fillRect(clipX + wx, y + 30 - amp / 2, 2, amp);
+            }
+          }
+        });
+
+        // Playhead
+        const playheadX = (state.playheadBeat / 4) * zoomPxPerBar;
+        ctx.strokeStyle = '#FCEADE';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(playheadX, 0); ctx.lineTo(playheadX, canvas.height); ctx.stroke();
+
+        canvas.onclick = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const cx = (e.clientX - rect.left) * (canvas.width / rect.width);
+          state.playheadBeat = Math.max(0, (cx / zoomPxPerBar) * 4);
+          drawMultitrackTimeline();
+          if (state.isPlaying) startMasterPlayback();
+        };
+      }
+
+      // Mixing Console & DSP Insert Rack
+      function renderMixingConsole() {
+        const rack = document.getElementById('mixerChannelsRack');
+        if (!rack) return;
+        rack.innerHTML = '';
+
+        state.currentProject.tracks.forEach(t => {
+          const isSel = t.id === state.selectedMixerTrackId;
+          const db = t.volume <= 0.01 ? '-∞' : (20 * Math.log10(t.volume)).toFixed(1);
+          const strip = document.createElement('div');
+          strip.className = 'channel-strip';
+          if (isSel) strip.style.border = '2px solid var(--accent-rose)';
+          strip.innerHTML = `
+            <div style="width:100%; height:5px; border-radius:99px; background:${t.color};"></div>
+            <strong style="font-size:11.5px; text-align:center; color:var(--accent-plum-dark); height:28px; overflow:hidden;">${t.name}</strong>
+            <div style="font-size:10px; color:var(--text-muted);">PAN: ${t.pan === 0 ? 'C' : (t.pan < 0 ? 'L' + Math.abs(Math.round(t.pan * 100)) : 'R' + Math.round(t.pan * 100))}</div>
+            <input type="range" min="-1" max="1" step="0.05" value="${t.pan}" data-ctrl="pan" style="width:92px;" />
+            <div class="fader-well">
+              <input type="range" class="vertical-fader" min="0" max="1.2" step="0.02" value="${t.volume}" data-ctrl="vol" />
+              <canvas width="12" height="136" data-meter="${t.id}" style="background:#231E26; border-radius:6px; width:12px; height:136px;"></canvas>
+            </div>
+            <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-charcoal);">${db} dB</div>
+            <div style="display:flex; gap:5px;">
+              <button class="btn btn-sm" data-act="mute" style="padding:3px 8px; ${t.mute ? 'background:#B83256;color:#FFF;' : ''}">M</button>
+              <button class="btn btn-sm" data-act="solo" style="padding:3px 8px; ${t.solo ? 'background:#6B4E71;color:#FFF;' : ''}">S</button>
+            </div>
+          `;
+          strip.onclick = (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+            state.selectedMixerTrackId = t.id;
+            renderMixingConsole();
+          };
+          strip.querySelector('[data-ctrl="pan"]').oninput = (e) => { t.pan = parseFloat(e.target.value); };
+          strip.querySelector('[data-ctrl="vol"]').oninput = (e) => { t.volume = parseFloat(e.target.value); drawMultitrackTimeline(); };
+          strip.querySelector('[data-act="mute"]').onclick = () => { t.mute = !t.mute; renderMixingConsole(); drawMultitrackTimeline(); };
+          strip.querySelector('[data-act="solo"]').onclick = () => { t.solo = !t.solo; renderMixingConsole(); drawMultitrackTimeline(); };
+          rack.appendChild(strip);
+        });
+
+        // Master Bus Strip
+        const masterStrip = document.createElement('div');
+        masterStrip.className = 'channel-strip master-strip';
+        const mVol = masterGainNode ? masterGainNode.gain.value : 0.88;
+        masterStrip.innerHTML = `
+          <div style="width:100%; height:5px; border-radius:99px; background:linear-gradient(90deg,#D98B9E,#6B4E71);"></div>
+          <strong style="font-size:12px; color:var(--accent-plum-dark);">MASTER BUS</strong>
+          <div style="font-size:10px; color:var(--text-muted);">STEREO OUT</div>
+          <div class="fader-well" style="margin-top:22px;">
+            <input type="range" class="vertical-fader" min="0" max="1.2" step="0.02" value="${mVol}" id="masterBusFader" />
+            <canvas width="16" height="136" data-meter="master" style="background:#231E26; border-radius:6px; width:16px; height:136px;"></canvas>
+          </div>
+          <div style="font-family:var(--font-mono); font-size:11px;">0.0 dB</div>
+        `;
+        masterStrip.querySelector('#masterBusFader').oninput = (e) => {
+          if (masterGainNode) masterGainNode.gain.value = parseFloat(e.target.value);
+        };
+        rack.appendChild(masterStrip);
+
+        // Render Selected Channel DSP Insert Chain
+        const selTrack = state.currentProject.tracks.find(t => t.id === state.selectedMixerTrackId) || state.currentProject.tracks[0];
+        if (!selTrack) return;
+        document.getElementById('selectedDspTrackTitle').textContent = `Channel DSP Insert Chain — ${selTrack.name}`;
+        const fx = selTrack.fx || (selTrack.fx = { ...FX_PRESETS.warm_vocal });
+        const dspGrid = document.getElementById('dspControlsGrid');
+        dspGrid.innerHTML = `
+          <div style="background:var(--surface-subtle); padding:10px; border-radius:10px; font-size:12px;">
+            <strong>3-Band Parametric EQ</strong><br/>
+            <label>Low Shelf: ${fx.eqLow} dB <input type="range" min="-15" max="12" step="0.5" value="${fx.eqLow}" data-fx="eqLow" style="width:100%;" /></label>
+            <label>Mid Peak: ${fx.eqMid} dB <input type="range" min="-12" max="12" step="0.5" value="${fx.eqMid}" data-fx="eqMid" style="width:100%;" /></label>
+            <label>High Air: ${fx.eqHigh} dB <input type="range" min="-12" max="12" step="0.5" value="${fx.eqHigh}" data-fx="eqHigh" style="width:100%;" /></label>
+          </div>
+          <div style="background:var(--surface-subtle); padding:10px; border-radius:10px; font-size:12px;">
+            <strong>Dynamics Compressor</strong><br/>
+            <label>Threshold: ${fx.compThresh} dB <input type="range" min="-40" max="0" step="1" value="${fx.compThresh}" data-fx="compThresh" style="width:100%;" /></label>
+            <label>Warmth Drive: ${Math.round((fx.drive || 0) * 100)}% <input type="range" min="0" max="0.6" step="0.02" value="${fx.drive || 0}" data-fx="drive" style="width:100%;" /></label>
+          </div>
+          <div style="background:var(--surface-subtle); padding:10px; border-radius:10px; font-size:12px;">
+            <strong>Algorithmic Reverb</strong><br/>
+            <label>Hall Wet Mix: ${Math.round((fx.reverb || 0) * 100)}% <input type="range" min="0" max="0.9" step="0.02" value="${fx.reverb || 0}" data-fx="reverb" style="width:100%;" /></label>
+          </div>
+          <div style="background:var(--surface-subtle); padding:10px; border-radius:10px; font-size:12px;">
+            <strong>Stereo Delay & Chorus</strong><br/>
+            <label>Delay Mix: ${Math.round((fx.delay || 0) * 100)}% <input type="range" min="0" max="0.7" step="0.02" value="${fx.delay || 0}" data-fx="delay" style="width:100%;" /></label>
+            <label>Chorus Width: ${Math.round((fx.chorus || 0) * 100)}% <input type="range" min="0" max="0.8" step="0.02" value="${fx.chorus || 0}" data-fx="chorus" style="width:100%;" /></label>
+          </div>
+        `;
+        dspGrid.querySelectorAll('input[data-fx]').forEach(inp => {
+          inp.oninput = (e) => {
+            fx[e.target.dataset.fx] = parseFloat(e.target.value);
+          };
+        });
+      }
+
+      function updateLiveLevelMeters() {
+        document.querySelectorAll('canvas[data-meter]').forEach(c => {
+          const id = c.dataset.meter;
+          const analyser = id === 'master' ? masterAnalyser : state.analyserMap[id];
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#231E26';
+          ctx.fillRect(0, 0, c.width, c.height);
+          let level = 0;
+          if (analyser && state.isPlaying) {
+            const arr = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteTimeDomainData(arr);
+            let sum = 0;
+            for (let i = 0; i < arr.length; i++) {
+              const v = (arr[i] - 128) / 128;
+              sum += v * v;
+            }
+            level = Math.min(1, Math.sqrt(sum / arr.length) * 3.2);
+          }
+          const h = level * c.height;
+          const g = ctx.createLinearGradient(0, c.height, 0, 0);
+          g.addColorStop(0, '#D98B9E');
+          g.addColorStop(0.7, '#E5D9F2');
+          g.addColorStop(1, '#FCEADE');
+          ctx.fillStyle = g;
+          ctx.fillRect(2, c.height - h, c.width - 4, h);
+        });
+      }
+
+      // Arrangement Assistant Renderer
+      function renderArrangementAssistant() {
+        const grid = document.getElementById('arrangementAssistantGrid');
+        grid.innerHTML = '';
+        const suggestions = [
+          { title: 'Dynamic Energy Arc', body: 'Start with sparse pad + breathy verse vocals, introduce +3rd harmony stack at the Pre-Chorus, and open high-shelf brightness on the Chorus.' },
+          { title: 'Vocal Layering Map', body: 'Keep Lead Vocal centered (Pan 0), spread Stereo Doubles L45/R45 on Chorus hooks, and add subtle 280ms stereo delay on phrase endings.' },
+          { title: 'Transition Cues', body: 'Insert a 1-beat vocal breath pause before the Chorus drop and automate reverb wetness up to 55% on the Outro.' }
+        ];
+        suggestions.forEach(s => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `<div class="card-title"><span>${s.title}</span></div><p style="font-size:13px; color:var(--text-muted); line-height:1.6;">${s.body}</p>`;
+          grid.appendChild(card);
+        });
+      }
+
+      // Sound Library Renderer
+      function renderSoundLibrary() {
+        const grid = document.getElementById('soundLibraryGrid');
+        const q = (document.getElementById('soundLibrarySearch').value || '').toLowerCase();
+        grid.innerHTML = '';
+
+        const items = [
+          ...Object.entries(VOCAL_PRESETS).map(([k, v]) => ({ cat: 'Virtual Vocal Preset', name: v.name, desc: `Wave: ${v.wave} · Formant ${v.formantShift}x · Brightness ${v.brightness}Hz`, type: 'vocal', key: k })),
+          ...Object.entries(FX_PRESETS).map(([k, v]) => ({ cat: 'Channel FX Chain', name: k.replace('_', ' ').toUpperCase(), desc: `EQ (${v.eqLow}/${v.eqMid}/${v.eqHigh} dB) · Reverb ${Math.round(v.reverb * 100)}%`, type: 'fx', key: k })),
+          { cat: 'Procedural Backing', name: 'Dreamy Pastel Synth Pad', desc: '4-bar minor harmonic pad + warm sub bass', type: 'backing', key: 'dreamy' },
+          { cat: 'Procedural Backing', name: 'Midnight Lo-Fi Rhodes', desc: 'Warm filtered electric piano + muted rim pulse', type: 'backing', key: 'lofi' }
+        ].filter(it => it.name.toLowerCase().includes(q) || it.cat.toLowerCase().includes(q));
+
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <span style="font-size:10.5px; font-weight:700; text-transform:uppercase; color:var(--accent-rose-deep);">${item.cat}</span>
+            <div style="font-family:var(--font-serif); font-size:18px; font-weight:600; margin:4px 0;">${item.name}</div>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">${item.desc}</p>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-sm btn-soft" data-act="preview">▶ Preview</button>
+              <button class="btn btn-sm btn-primary" data-act="apply">Apply to Project</button>
+            </div>
+          `;
+          card.querySelector('[data-act="preview"]').onclick = () => {
+            const ctx = ensureAudioContext();
+            if (item.type === 'vocal') {
+              const p = VOCAL_PRESETS[item.key];
+              scheduleSyntheticVocalPerformance(ctx, masterGainNode, [{ text: 'la', vowel: 'A', pitch: 69, start: 0, duration: 1.2 }], p);
+            } else {
+              auditionSingleMidiNote(72);
+            }
+          };
+          card.querySelector('[data-act="apply"]').onclick = async () => {
+            if (item.type === 'vocal') {
+              state.currentProject.vocalSettings = { ...VOCAL_PRESETS[item.key], presetId: item.key };
+              renderVirtualSingerLab();
+              await renderVocalsToBuffers(false);
+            } else if (item.type === 'fx') {
+              const t = state.currentProject.tracks.find(x => x.id === state.selectedMixerTrackId) || state.currentProject.tracks[0];
+              t.fx = { ...FX_PRESETS[item.key] };
+              renderMixingConsole();
+              showToast(`Applied ${item.name} to ${t.name}.`);
+            } else if (item.type === 'backing') {
+              await generateProceduralInstrumental(item.key);
+              showToast(`Generated ${item.name}!`);
+            }
+          };
+          grid.appendChild(card);
+        });
+      }
+
+      /* ======================================================================
+         MODULE 7: OFFLINE PCM WAV ENCODER & GITHUB PAGES PACKAGE EXPORTER
+         ====================================================================== */
+      function encodeAudioBufferToWavBlob(buffer, bitDepth = 16) {
+        const numChannels = buffer.numberOfChannels;
+        const sampleRate = buffer.sampleRate;
+        const bytesPerSample = bitDepth === 24 ? 3 : 2;
+        const blockAlign = numChannels * bytesPerSample;
+        const dataLength = buffer.length * blockAlign;
+        const arrayBuffer = new ArrayBuffer(44 + dataLength);
+        const view = new DataView(arrayBuffer);
+
+        const writeStr = (offset, str) => {
+          for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+        };
+
+        writeStr(0, 'RIFF');
+        view.setUint32(4, 36 + dataLength, true);
+        writeStr(8, 'WAVE');
+        writeStr(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true); // PCM
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * blockAlign, true);
+        view.setUint16(32, blockAlign, true);
+        view.setUint16(34, bitDepth, true);
+        writeStr(36, 'data');
+        view.setUint32(40, dataLength, true);
+
+        const channels = [];
+        for (let c = 0; c < numChannels; c++) channels.push(buffer.getChannelData(c));
+
+        let offset = 44;
+        for (let i = 0; i < buffer.length; i++) {
+          for (let c = 0; c < numChannels; c++) {
+            const sample = Math.max(-1, Math.min(1, channels[c][i]));
+            if (bitDepth === 24) {
+              const val = sample < 0 ? sample * 0x800000 : sample * 0x7FFFFF;
+              const intVal = Math.round(val);
+              view.setUint8(offset, intVal & 0xff);
+              view.setUint8(offset + 1, (intVal >> 8) & 0xff);
+              view.setUint8(offset + 2, (intVal >> 16) & 0xff);
+              offset += 3;
+            } else {
+              const val = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+              view.setInt16(offset, Math.round(val), true);
+              offset += 2;
+            }
+          }
+        }
+        return new Blob([arrayBuffer], { type: 'audio/wav' });
+      }
+
+      function triggerDownloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      }
+
+      async function renderOfflineMasterMix(singleTrackFilter = null) {
+        const sr = parseInt(document.getElementById('exportSampleRate').value || 44100, 10);
+        const bitDepth = parseInt(document.getElementById('exportBitDepth').value || 16, 10);
+        if (!state.instrumentalBuffer) await generateProceduralInstrumental('dreamy');
+        if (!state.renderedVocalBuffer) await renderVocalsToBuffers(true);
+
+        const duration = Math.max(
+          state.instrumentalBuffer ? state.instrumentalBuffer.duration : 16,
+          state.renderedVocalBuffer ? state.renderedVocalBuffer.duration : 16
+        );
+        const offCtx = new OfflineAudioContext(2, Math.ceil(sr * duration), sr);
+        const tracks = state.currentProject.tracks;
+
+        tracks.forEach(t => {
+          if (singleTrackFilter && t.id !== singleTrackFilter) return;
+          const chain = buildChannelDspChain(offCtx, t, offCtx.destination);
+          if (t.type === 'instrumental' && state.instrumentalBuffer) {
+            const src = offCtx.createBufferSource();
+            src.buffer = state.instrumentalBuffer;
+            src.connect(chain);
+            src.start(0);
+          } else if (t.type === 'vocal' && state.renderedVocalBuffer) {
+            const src = offCtx.createBufferSource();
+            src.buffer = state.renderedVocalBuffer;
+            src.connect(chain);
+            src.start(0);
+          } else if (t.type === 'harmony' && state.renderedHarmonyBuffer) {
+            const src = offCtx.createBufferSource();
+            src.buffer = state.renderedHarmonyBuffer;
+            src.connect(chain);
+            src.start(0);
+          }
+        });
+
+        const renderedBuffer = await offCtx.startRendering();
+        return encodeAudioBufferToWavBlob(renderedBuffer, bitDepth);
+      }
+
+      function renderExportView() {
+        const p = state.currentProject;
+        document.getElementById('finalProjectSummary').innerHTML = `
+          <strong>Song Title:</strong> ${p.title}<br/>
+          <strong>Genre & Key:</strong> ${p.genre} · ${p.key} ${p.scale.replace('_', ' ')} · ${p.bpm} BPM (${p.timeSig})<br/>
+          <strong>Arrangement Sections:</strong> ${p.sections.map(s => s.name).join(' → ')}<br/>
+          <strong>Active Tracks:</strong> ${p.tracks.length} tracks · ${p.melodyNotes.length} melody notes · ${p.syllableMap.length} mapped syllables
+        `;
+      }
+
+      /* ======================================================================
+         MODULE 8: GLOBAL EVENT WIRING, SHORTCUTS & INITIALIZATION
+         ====================================================================== */
+      function refreshEntireUI() {
+        const p = state.currentProject;
+        document.getElementById('globalProjectTitle').value = p.title;
+        document.getElementById('globalBpm').value = p.bpm;
+        document.getElementById('globalKey').value = p.key;
+        document.getElementById('globalScale').value = p.scale;
+        document.getElementById('globalTimeSig').value = p.timeSig;
+
+        renderDashboard();
+        renderSongwritingRoom();
+        drawWaveformCanvas();
+        drawPianoRoll();
+        renderVirtualSingerLab();
+        renderHarmonyStudio();
+        drawMultitrackTimeline();
+        renderMixingConsole();
+        renderArrangementAssistant();
+        renderSoundLibrary();
+        renderExportView();
+      }
+
+      function switchActiveView(viewId) {
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewId));
+        document.querySelectorAll('.view-panel').forEach(panel => panel.classList.toggle('active', panel.id === 'view-' + viewId));
+        if (viewId === 'instrumental') drawWaveformCanvas();
+        if (viewId === 'melody') drawPianoRoll();
+        if (viewId === 'multitrack') drawMultitrackTimeline();
+        if (viewId === 'export') renderExportView();
+      }
+
+      function wireAllEventListeners() {
+        // Sidebar Navigation
+        document.querySelectorAll('.nav-item').forEach(btn => {
+          btn.onclick = () => switchActiveView(btn.dataset.view);
+        });
+        document.getElementById('btnToggleSidebar').onclick = () => {
+          document.getElementById('appShell').classList.toggle('sidebar-collapsed');
+          setTimeout(() => { drawWaveformCanvas(); drawPianoRoll(); drawMultitrackTimeline(); }, 180);
+        };
+
+        // Global Transport Controls
+        document.getElementById('btnTransportPlay').onclick = () => {
+          if (state.isPlaying) stopAllAudioPlayback();
+          else startMasterPlayback();
+        };
+        document.getElementById('btnTransportStop').onclick = () => {
+          stopAllAudioPlayback();
+          state.playheadBeat = 0;
+          drawMultitrackTimeline();
+          drawPianoRoll();
+        };
+        document.getElementById('btnTransportLoop').onclick = (e) => {
+          state.loopEnabled = !state.loopEnabled;
+          e.currentTarget.classList.toggle('toggle-on', state.loopEnabled);
+        };
+        document.getElementById('btnTransportMetronome').onclick = (e) => {
+          state.metronomeEnabled = !state.metronomeEnabled;
+          e.currentTarget.classList.toggle('toggle-on', state.metronomeEnabled);
+        };
+
+        document.getElementById('globalProjectTitle').onchange = (e) => {
+          state.currentProject.title = e.target.value || 'Untitled Song';
+          saveProjectToDB(state.currentProject);
+          renderDashboard();
+        };
+        document.getElementById('globalBpm').onchange = (e) => {
+          state.currentProject.bpm = Math.max(50, Math.min(220, parseInt(e.target.value || 96, 10)));
+          updateLyricSummaryStats();
+        };
+        document.getElementById('globalKey').onchange = (e) => { state.currentProject.key = e.target.value; drawPianoRoll(); };
+        document.getElementById('globalScale').onchange = (e) => { state.currentProject.scale = e.target.value; drawPianoRoll(); };
+        document.getElementById('globalTimeSig').onchange = (e) => { state.currentProject.timeSig = e.target.value; };
+
+        document.getElementById('btnUndo').onclick = undoAction;
+        document.getElementById('btnRedo').onclick = redoAction;
+        document.getElementById('btnManualSave').onclick = async () => {
+          await saveProjectToDB(state.currentProject);
+          document.getElementById('autosaveText').textContent = 'Saved ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          showToast('Project saved locally to IndexedDB.');
+        };
+
+        // Dashboard Buttons
+        document.getElementById('btnLoadDemoProject').onclick = async () => {
+          state.currentProject = createDemoProject();
+          await generateProceduralInstrumental('dreamy');
+          await renderVocalsToBuffers(true);
+          refreshEntireUI();
+          showToast('Loaded "Velvet Echoes" demo song!');
+        };
+        document.getElementById('btnNewBlankProject').onclick = async () => {
+          const p = createDemoProject();
+          p.id = 'proj_' + Date.now();
+          p.title = 'Untitled Pastel Composition';
+          p.folder = 'Drafts';
+          p.favourite = false;
+          p.sections = [{ id: 's1', type: 'Verse', name: 'Verse 1', delivery: 'soft', notes: '', lyrics: 'Write your opening verse here...' }];
+          p.melodyNotes = [];
+          p.syllableMap = [];
+          state.currentProject = p;
+          state.projects.unshift(p);
+          await saveProjectToDB(p);
+          refreshEntireUI();
+          showToast('Created new blank project.');
+        };
+        document.getElementById('projectSearchInput').oninput = renderDashboard;
+        document.getElementById('projectFolderFilter').onchange = renderDashboard;
+        document.getElementById('projectSortSelect').onchange = renderDashboard;
+
+        document.getElementById('btnImportJsonTrigger').onclick = () => document.getElementById('inputImportJson').click();
+        document.getElementById('inputImportJson').onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = async (ev) => {
+            try {
+              const imported = JSON.parse(ev.target.result);
+              if (!imported.title || !imported.sections) throw new Error('Invalid project schema');
+              imported.id = 'proj_' + Date.now();
+              state.currentProject = imported;
+              state.projects.unshift(imported);
+              await saveProjectToDB(imported);
+              refreshEntireUI();
+              showToast(`Imported "${imported.title}"!`);
+            } catch (err) {
+              showToast('Could not parse project JSON file.');
+            }
+          };
+          reader.readAsText(file);
+        };
+
+        // Songwriting Room
+        document.getElementById('btnAddLyricSection').onclick = () => {
+          pushUndoSnapshot();
+          const type = document.getElementById('newSectionTypeSelect').value;
+          state.currentProject.sections.push({
+            id: 'sec_' + Date.now(),
+            type,
+            name: type,
+            delivery: 'soft',
+            notes: '',
+            lyrics: ''
+          });
+          renderSongwritingRoom();
+        };
+        document.getElementById('btnSendLyricsToSinger').onclick = () => {
+          syncSyllablesFromLyricsAndMelody(false);
+          switchActiveView('singer');
+        };
+        document.getElementById('btnFindRhymes').onclick = runRhymeLookup;
+        document.getElementById('rhymeSearchInput').oninput = runRhymeLookup;
+        document.getElementById('syllableProbeInput').oninput = updateSyllableProbe;
+
+        // Instrumental Audio Upload & Procedural Generators
+        const handleAudioUpload = async (file) => {
+          if (!file) return;
+          try {
+            const ctx = ensureAudioContext();
+            const arrBuf = await file.arrayBuffer();
+            const decoded = await ctx.decodeAudioData(arrBuf);
+            state.instrumentalBuffer = decoded;
+            state.currentProject.instrumentalTrim.start = 0;
+            state.currentProject.instrumentalTrim.end = Number(decoded.duration.toFixed(1));
+            state.currentProject.instrumentalTrim.name = file.name;
+            document.getElementById('instrTrimEnd').value = state.currentProject.instrumentalTrim.end;
+            drawWaveformCanvas();
+            drawMultitrackTimeline();
+            showToast(`Loaded "${file.name}" (${decoded.duration.toFixed(1)}s)`);
+          } catch (err) {
+            showToast('Unable to decode audio file. Please try WAV, MP3, or OGG.');
+          }
+        };
+        document.getElementById('inputAudioFile').onchange = (e) => handleAudioUpload(e.target.files[0]);
+        const dropZone = document.getElementById('audioDropZone');
+        dropZone.onclick = () => document.getElementById('inputAudioFile').click();
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.background = 'rgba(248,232,238,0.8)'; };
+        dropZone.ondragleave = () => { dropZone.style.background = ''; };
+        dropZone.ondrop = (e) => { e.preventDefault(); dropZone.style.background = ''; handleAudioUpload(e.dataTransfer.files[0]); };
+
+        document.getElementById('btnGenSynthBacking1').onclick = async () => { await generateProceduralInstrumental('dreamy'); showToast('Generated Dreamy Synth Backing!'); };
+        document.getElementById('btnGenSynthBacking2').onclick = async () => { await generateProceduralInstrumental('lofi'); showToast('Generated Lo-Fi Rhodes Backing!'); };
+        document.getElementById('waveformZoom').oninput = drawWaveformCanvas;
+        document.getElementById('instrPlaybackRate').oninput = (e) => {
+          const r = parseFloat(e.target.value);
+          state.currentProject.instrumentalTrim.rate = r;
+          document.getElementById('instrRateVal').textContent = r.toFixed(2) + 'x';
+        };
+        document.getElementById('instrTrimStart').onchange = (e) => { state.currentProject.instrumentalTrim.start = parseFloat(e.target.value) || 0; drawWaveformCanvas(); };
+        document.getElementById('instrTrimEnd').onchange = (e) => { state.currentProject.instrumentalTrim.end = parseFloat(e.target.value) || 16; drawWaveformCanvas(); };
+        document.getElementById('btnPreviewInstrumental').onclick = () => startMasterPlayback();
+        document.getElementById('btnStopInstrumental').onclick = () => stopAllAudioPlayback();
+
+        // Melody Piano Roll
+        document.getElementById('pianoBarsCount').onchange = drawPianoRoll;
+        document.getElementById('btnGenerateMelody').onclick = generateDeterministicMelody;
+        document.getElementById('btnClearMelody').onclick = () => { pushUndoSnapshot(); state.currentProject.melodyNotes = []; drawPianoRoll(); };
+        document.getElementById('btnPreviewMelody').onclick = () => {
+          const ctx = ensureAudioContext();
+          const beatSec = 60 / (state.currentProject.bpm || 96);
+          state.currentProject.melodyNotes.forEach(n => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = midiToFreq(n.pitch);
+            const t0 = ctx.currentTime + n.start * beatSec;
+            g.gain.setValueAtTime(0.18, t0);
+            g.gain.exponentialRampToValueAtTime(0.001, t0 + n.duration * beatSec);
+            osc.connect(g); g.connect(masterGainNode);
+            osc.start(t0); osc.stop(t0 + n.duration * beatSec + 0.02);
+            state.activeNodes.push(osc);
+          });
+        };
+
+        // Virtual Singer Lab
+        document.getElementById('vocalPresetSelect').onchange = (e) => {
+          const id = e.target.value;
+          state.currentProject.vocalSettings = { ...VOCAL_PRESETS[id], presetId: id };
+          renderVirtualSingerLab();
+        };
+        document.getElementById('btnAutoSyncSyllables').onclick = () => syncSyllablesFromLyricsAndMelody(false);
+        document.getElementById('btnPreviewVocalSynth').onclick = () => {
+          const ctx = ensureAudioContext();
+          scheduleSyntheticVocalPerformance(ctx, masterGainNode, state.currentProject.syllableMap, state.currentProject.vocalSettings);
+        };
+        document.getElementById('btnRenderFullVocal').onclick = () => renderVocalsToBuffers(false);
+
+        // Harmony Studio
+        document.getElementById('btnAddHarmonyLayer').onclick = () => {
+          const mode = document.getElementById('harmonyModeSelect').value;
+          if (mode === 'third_above') state.currentProject.harmonyLayers.push({ id: 'h_' + Date.now(), name: '+3rd Harmony', semitones: 3, volume: 0.65, pan: -0.4, delayMs: 12, presetId: 'airy_electronic', enabled: true });
+          else if (mode === 'fifth_above') state.currentProject.harmonyLayers.push({ id: 'h_' + Date.now(), name: '+5th Harmony', semitones: 7, volume: 0.6, pan: 0.4, delayMs: 16, presetId: 'soft_pop', enabled: true });
+          else if (mode === 'octave_double') state.currentProject.harmonyLayers.push({ id: 'h_' + Date.now(), name: 'Octave Double', semitones: 12, volume: 0.5, pan: 0.25, delayMs: 20, presetId: 'ethereal', enabled: true });
+          else {
+            state.currentProject.harmonyLayers.push({ id: 'h1_' + Date.now(), name: 'Triad +3rd L', semitones: 3, volume: 0.58, pan: -0.55, delayMs: 14, presetId: 'airy_electronic', enabled: true });
+            state.currentProject.harmonyLayers.push({ id: 'h2_' + Date.now(), name: 'Triad +5th R', semitones: 7, volume: 0.55, pan: 0.55, delayMs: 18, presetId: 'choir_like', enabled: true });
+          }
+          renderHarmonyStudio();
+          renderVocalsToBuffers(true);
+        };
+        document.getElementById('btnPreviewVocalStack').onclick = () => {
+          const ctx = ensureAudioContext();
+          scheduleSyntheticVocalPerformance(ctx, masterGainNode, state.currentProject.syllableMap, state.currentProject.vocalSettings, 0, 0);
+          state.currentProject.harmonyLayers.filter(l => l.enabled).forEach(l => {
+            const p = VOCAL_PRESETS[l.presetId] || state.currentProject.vocalSettings;
+            const g = ctx.createGain();
+            g.gain.value = l.volume;
+            g.connect(masterGainNode);
+            scheduleSyntheticVocalPerformance(ctx, g, state.currentProject.syllableMap, p, l.semitones, l.delayMs / 1000);
+          });
+        };
+
+        // Multitrack & Mixer
+        document.getElementById('multitrackZoom').oninput = drawMultitrackTimeline;
+        document.getElementById('btnAddTrack').onclick = () => {
+          state.currentProject.tracks.push({
+            id: 'trk_' + Date.now(),
+            name: 'Pastel Arp Synth',
+            type: 'synth',
+            color: '#A486C6',
+            volume: 0.6,
+            pan: 0.2,
+            mute: false,
+            solo: false,
+            clipStart: 0,
+            clipBars: 8,
+            fx: { ...FX_PRESETS.dreamy_vocal }
+          });
+          drawMultitrackTimeline();
+          renderMixingConsole();
+        };
+        document.getElementById('btnApplyFxPreset').onclick = () => {
+          const presetKey = document.getElementById('fxPresetSelector').value;
+          const t = state.currentProject.tracks.find(x => x.id === state.selectedMixerTrackId) || state.currentProject.tracks[0];
+          t.fx = { ...FX_PRESETS[presetKey] };
+          renderMixingConsole();
+          showToast(`Applied FX preset to ${t.name}.`);
+        };
+        document.getElementById('btnResetMixer').onclick = () => {
+          state.currentProject.tracks.forEach(t => { t.volume = 0.8; t.pan = 0; t.mute = false; t.solo = false; });
+          renderMixingConsole();
+          drawMultitrackTimeline();
+        };
+
+        // Arrangement Assistant
+        document.getElementById('btnApplyArrangementFormat').onclick = () => {
+          const fmt = document.getElementById('arrangementTemplateSelect').value;
+          const map = {
+            verse_chorus: ['Verse 1', 'Chorus', 'Verse 2', 'Chorus'],
+            intro_verse_chorus: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Outro'],
+            aaba: ['Verse A1', 'Verse A2', 'Bridge B', 'Verse A3'],
+            cinematic: ['Atmospheric Intro', 'Rising Verse', 'Cinematic Climax', 'Ethereal Outro'],
+            experimental: ['Texture Intro', 'Fragmented Verse', 'Formant Breakdown', 'Final Swell']
+          };
+          pushUndoSnapshot();
+          state.currentProject.sections = (map[fmt] || map.verse_chorus).map((name, i) => ({
+            id: 'sec_arr_' + i + '_' + Date.now(),
+            type: name.includes('Chorus') ? 'Chorus' : (name.includes('Intro') ? 'Intro' : 'Verse'),
+            name,
+            delivery: i % 2 === 0 ? 'soft' : 'layered',
+            notes: 'Generated from Arrangement Assistant blueprint',
+            lyrics: state.currentProject.sections[i % state.currentProject.sections.length]?.lyrics || 'New lyric lines for ' + name
+          }));
+          renderSongwritingRoom();
+          showToast('Applied song structure blueprint!');
+        };
+
+        document.getElementById('soundLibrarySearch').oninput = renderSoundLibrary;
+
+        // Export & Production
+        document.getElementById('btnRenderMasterWav').onclick = async () => {
+          const wrap = document.getElementById('exportProgressWrap');
+          const bar = document.getElementById('exportProgressBar');
+          wrap.style.display = 'block';
+          bar.style.width = '35%';
+          const wavBlob = await renderOfflineMasterMix(null);
+          bar.style.width = '100%';
+          const url = URL.createObjectURL(wavBlob);
+          const audioEl = document.getElementById('renderedMasterAudio');
+          audioEl.src = url;
+          document.getElementById('masterPreviewContainer').style.display = 'block';
+          const safeName = (state.currentProject.title || 'lyrica-song').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          triggerDownloadBlob(wavBlob, `${safeName}-master.wav`);
+          showToast('Master PCM WAV rendered & downloaded!');
+        };
+
+        document.getElementById('btnExportAllStems').onclick = async () => {
+          for (const t of state.currentProject.tracks) {
+            const blob = await renderOfflineMasterMix(t.id);
+            const slug = t.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            triggerDownloadBlob(blob, `stem-${slug}.wav`);
+          }
+          showToast('Exported individual WAV track stems!');
+        };
+
+        document.getElementById('btnExportProjectJson').onclick = () => {
+          const blob = new Blob([JSON.stringify(state.currentProject, null, 2)], { type: 'application/json' });
+          const safeName = (state.currentProject.title || 'project').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          triggerDownloadBlob(blob, `${safeName}-lyrica-archive.json`);
+        };
+
+        document.getElementById('btnExportGithubBundle').onclick = () => {
+          const htmlSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+          triggerDownloadBlob(new Blob([htmlSource], { type: 'text/html' }), 'index.html');
+          const readme = `# ୨ৎ LYRICA STUDIO\n\nBrowser-based virtual songwriting, formant vocal synthesis, and multitrack music production workstation.\n\n## GitHub Pages Deployment\n1. Upload \`index.html\` to the root of your GitHub repository.\n2. Open **Settings → Pages** and select the \`main\` branch root folder.\n3. Launch your live studio URL with zero backend or API keys required.`;
+          triggerDownloadBlob(new Blob([readme], { type: 'text/markdown' }), 'README.md');
+          showToast('Downloaded GitHub Pages index.html + README.md!');
+        };
+
+        // Modals & Keyboard Shortcuts
+        document.getElementById('btnOpenTutorial').onclick = () => document.getElementById('tutorialModal').classList.add('open');
+        document.getElementById('btnCloseTutorial').onclick = () => document.getElementById('tutorialModal').classList.remove('open');
+        document.getElementById('btnStartCreating').onclick = () => document.getElementById('tutorialModal').classList.remove('open');
+        document.getElementById('btnOpenSettings').onclick = () => document.getElementById('settingsModal').classList.add('open');
+        document.getElementById('btnCloseSettings').onclick = () => document.getElementById('settingsModal').classList.remove('open');
+        document.getElementById('btnSaveSettings').onclick = () => { document.getElementById('settingsModal').classList.remove('open'); showToast('Studio preferences saved.'); };
+        document.getElementById('btnResetAllStorage').onclick = () => {
+          indexedDB.deleteDatabase(DB_NAME);
+          localStorage.removeItem('lyrica_projects');
+          showToast('Local database reset. Reloading default demo...');
+          setTimeout(() => location.reload(), 800);
+        };
+
+        window.addEventListener('keydown', (e) => {
+          if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+          if (e.code === 'Space') {
+            e.preventDefault();
+            if (state.isPlaying) stopAllAudioPlayback();
+            else startMasterPlayback();
+          } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+            e.preventDefault();
+            document.getElementById('btnManualSave').click();
+          } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+            e.preventDefault();
+            undoAction();
+          } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+            e.preventDefault();
+            redoAction();
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          drawWaveformCanvas();
+          drawPianoRoll();
+          drawMultitrackTimeline();
+        });
+      }
+
+      /* ======================================================================
+         BOOT SEQUENCE
+         ====================================================================== */
+      window.addEventListener('load', async () => {
+        await openStudioDB();
+        const saved = await getAllProjectsFromDB();
+        if (saved && saved.length > 0) {
+          state.projects = saved;
+          state.currentProject = saved[0];
+        } else {
+          const demo = createDemoProject();
+          state.projects = [demo];
+          state.currentProject = demo;
+          await saveProjectToDB(demo);
+        }
+
+        wireAllEventListeners();
+        initPianoRollInteraction();
+        runRhymeLookup();
+        updateSyllableProbe();
+        refreshEntireUI();
+
+        // Pre-render procedural backing & synthetic vocals so Play works immediately
+        await generateProceduralInstrumental('dreamy');
+        await renderVocalsToBuffers(true);
+
+        // Periodic Autosave
+        setInterval(async () => {
+          if (document.getElementById('settingAutosave').checked) {
+            await saveProjectToDB(state.currentProject);
+            document.getElementById('autosaveText').textContent = 'Autosaved';
+          }
+        }, 12000);
+
+        // First-visit welcome walkthrough
+        if (!localStorage.getItem('lyrica_welcomed')) {
+          localStorage.setItem('lyrica_welcomed', '1');
+          document.getElementById('tutorialModal').classList.add('open');
+        }
+
+        requestAnimationFrame(animationLoop);
+      });
+    })();
+  </script>
+</body>
+</html>
